@@ -1,4 +1,5 @@
 package-lock.json
-firebase.json
+example/*.js
+example/*.json
 dist/
 node_modules/
