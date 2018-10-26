@@ -10,7 +10,8 @@ ready(() => {
     throw new Error('Root element (#echo-thread) was not found. Unable to display comments');
   }
 
-  const configRoot = rootElement.getAttribute('config-root');
-  
-  render(<App configRoot />, rootElement);
+  const configRoot = rootElement.getAttribute('configRoot');
+  console.log(configRoot)
+
+  render(<App />, rootElement);
 })

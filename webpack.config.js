@@ -2,10 +2,20 @@ const { join } = require('path');
 const { NoEmitOnErrorsPlugin } = require('webpack');
 
 module.exports = {
-  entry: join(__dirname, 'src/index.js'),
+  entry: {
+    main: join(__dirname, 'src/index.js')/*,
+    vendor: [
+      'inferno',
+      'firebase/app',
+      'firebase/auth',
+      'firebase/database',
+      'firebase/storage'
+    ]*/
+  },
   output: {
     path: join(__dirname, 'dist'),
-    filename: 'echo.[hash].js'
+    filename: 'echo.[hash].js',
+    chunkFilename: '[chunkhash].js'
   },
   resolve: {
     alias: {
@@ -18,9 +28,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'babel-loader'
-        }
+        use: 'babel-loader'
       }
     ]
   },

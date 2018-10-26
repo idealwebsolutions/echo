@@ -1,5 +1,6 @@
 import { Component } from 'inferno';
 import Loadable from 'inferno-loadable';
+import Frame from 'react-frame-component';
 import { get } from 'axios';
 
 import Loading from './loading';
@@ -20,9 +21,8 @@ class App extends Component {
   }
 
   componentDidMount () {
-    const { configRoot } = this.props;
+    // const { configRoot } = this.props;
     this.setState({ loading: true });
-    console.log(configRoot);
     getConfiguration()
       .then((response) => {
         console.log(response.data);
@@ -34,7 +34,11 @@ class App extends Component {
   }
 
   render () {
-    return this.state.loading ? <Loading /> : <PopulatedRoot />
+    return ( 
+      <Frame>
+        this.state.loading ? <Loading /> : <PopulatedRoot />
+      </Frame>
+    )
   }
 };
 
