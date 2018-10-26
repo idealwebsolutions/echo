@@ -23,7 +23,6 @@
     "is-my-json-valid": "^2.16.1",
     "markdown-it": "^8.4.2",
     "markdown-it-emoji": "^1.4.0",
-    "react-frame-component": "^4.0.2",
     "spacetime": "^4.5.1",
     "styled-components": "^4.0.2"
   },

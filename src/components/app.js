@@ -1,7 +1,11 @@
 import { Component } from 'inferno';
 import Loadable from 'inferno-loadable';
-import Frame from 'react-frame-component';
 import { get } from 'axios';
+import { initializeApp } from 'firebase/app';
+
+import 'firebase/auth';
+import 'firebase/database';
+import 'firebase/storage';
 
 import Loading from './loading';
 
@@ -10,7 +14,7 @@ const PopulatedRoot = Loadable({
   loading: Loading
 });
 
-const getConfiguration = (rootPath) => get(`${rootPath ? rootPath : '/'}config.json`)
+const getConfiguration = (path) => get(`${path ? path : '/config.json'}`)
 
 class App extends Component {
   constructor (props) {
@@ -21,11 +25,14 @@ class App extends Component {
   }
 
   componentDidMount () {
-    // const { configRoot } = this.props;
+    const { configPath } = this.props;
     this.setState({ loading: true });
-    getConfiguration()
+    getConfiguration(configPath)
       .then((response) => {
-        console.log(response.data);
+        // TODO: verify json with is-my-json-valid
+        const { firebase } = response.data;
+        console.log(firebase)
+        const fb = initializeApp(firebase);
         this.setState({ loading: false });
       })
       .catch((error) => {
@@ -34,11 +41,7 @@ class App extends Component {
   }
 
   render () {
-    return ( 
-      <Frame>
-        this.state.loading ? <Loading /> : <PopulatedRoot />
-      </Frame>
-    )
+    return this.state.loading ? <Loading /> : <PopulatedRoot />
   }
 };
 
