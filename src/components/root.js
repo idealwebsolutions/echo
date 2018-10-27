@@ -1,11 +1,13 @@
 import { Fragment } from 'inferno';
 
+// import Toolbar from './toolbar';
+// import CommentList from './comment';
+
 export default () =>
   <Fragment>
     <header>
     </header>
     <main>
-      <h3>Data loaded</h3>
     </main>
     <footer>
     </footer>

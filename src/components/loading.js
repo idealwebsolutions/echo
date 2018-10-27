@@ -1,1 +1,11 @@
-export default () => <h3>Loading...</h3>
+import { Dimmer, Loader, Segment } from 'semantic-ui-react';
+
+const Loading = () => (
+  <Segment>
+    <Dimmer active inverted>
+      <Loader />
+    </Dimmer>
+  </Segment>
+);
+
+export default Loading;
