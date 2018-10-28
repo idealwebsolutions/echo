@@ -1,11 +1,5 @@
-import { Dimmer, Loader, Segment } from 'semantic-ui-react';
-
 const Loading = () => (
-  <Segment>
-    <Dimmer active inverted>
-      <Loader />
-    </Dimmer>
-  </Segment>
+  <div>Loading...</div>
 );
 
 export default Loading;

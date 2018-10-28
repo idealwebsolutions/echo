@@ -1,4 +1,6 @@
 import { Component } from 'inferno';
+import Frame from 'react-frame-component';
+
 import { get } from 'axios';
 // import { initializeApp } from 'firebase/app';
 
@@ -40,7 +42,11 @@ class App extends Component {
 
   render () {
     const { loading } = this.state;
-    return loading ? <Loading /> : <Root />
+    return (
+      <Frame style={{ display: 'block', overflow: 'scroll', border: 0 }}>
+        {loading ? <Loading /> : <Root />}
+      </Frame>
+    );
   }
 };
 

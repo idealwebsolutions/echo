@@ -1,6 +1,11 @@
 import { Fragment } from 'inferno';
+import styled from 'styled-components';
+
+const Level = styled.div`
+  color: red;
+`
 
 export default () =>
   <Fragment>
-    <div>0 comments</div>
+    <Level>0 comments</Level>
   </Fragment>

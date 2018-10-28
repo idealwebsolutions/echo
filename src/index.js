@@ -1,5 +1,3 @@
-import 'semantic-ui-css/semantic.min.css';
-
 import ready from 'document-ready';
 import { render } from 'inferno';
 
