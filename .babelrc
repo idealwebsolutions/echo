@@ -1,4 +1,4 @@
 {
   "presets": ["@babel/preset-env"],
-  "plugins": ["babel-plugin-inferno", "syntax-dynamic-import", "babel-plugin-styled-components"]
+  "plugins": ["babel-plugin-inferno", "syntax-dynamic-import"]
 }

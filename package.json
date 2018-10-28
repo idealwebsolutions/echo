@@ -22,11 +22,13 @@
     "is-my-json-valid": "^2.16.1",
     "markdown-it": "^8.4.2",
     "markdown-it-emoji": "^1.4.0",
+    "prop-types": "^15.6.2",
     "react-firebaseui": "^3.1.2",
     "react-frame-component": "^2.0.2",
     "react-image-resizer": "^1.3.0",
+    "react-loader-spinner": "^2.0.6",
     "spacetime": "^4.5.1",
-    "styled-components": "^3.4.10"
+    "style-it": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
