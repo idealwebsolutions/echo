@@ -1,3 +1,3 @@
-import * from 'is-my-json-valid';
+import validator from 'is-my-json-valid';
 
-export validateSchema () => {} //(schema, payload) => validator(schema)(payload);
+export const validateSchema = (schema, payload) => validator(schema)(payload);

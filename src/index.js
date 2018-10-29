@@ -13,4 +13,4 @@ ready(() => {
   const configPath = rootElement.getAttribute('data-config-path');
 
   render(<App configPath={configPath} />, rootElement);
-})
+});

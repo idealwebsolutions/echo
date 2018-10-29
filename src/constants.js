@@ -1,4 +1,15 @@
-export LoginUIConfig (providers = []) => {
+export const ConfigSchema = {
+  required: true,
+  type: 'object',
+  properties: {
+    firebase: {
+      required: true,
+      type: 'string'
+    }
+  }
+};
+
+export function LoginUIConfig (providers = []) {
   if (!providers.length) {
     throw new RangeError('One login provider must be provided');
   }
@@ -10,4 +21,5 @@ export LoginUIConfig (providers = []) => {
       // Avoid redirects after sign-in
       signInSuccessWithAuthResult: () => false
     }
-};
+  };
+}

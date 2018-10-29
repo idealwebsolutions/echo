@@ -6,7 +6,8 @@ import Style from 'style-it';
 import Loading from './loading';
 import Root from './root';
 
-// import { validateSchema } from '../util';
+import { ConfigSchema } from '../constants';
+import { validateSchema } from '../util';
 
 const Base = ({ children }) => (
   <Style>
@@ -14,6 +15,12 @@ const Base = ({ children }) => (
       @import url('https://fonts.googleapis.com/css?family=Pontano+Sans');
       .base {
         font-family: 'Pontano Sans', sans-serif;
+      }
+      
+      .base > div {
+        width: 60px;
+        margin-left: auto;
+        margin-right: auto;
       }
     `}
     <div className="base">{children}</div>
@@ -44,7 +51,11 @@ class App extends Component {
     this.setState({ loading: true });
     getConfiguration()
       .then((response) => {
-        // TODO: verify json with is-my-json-valid
+        const valid = validateSchema(ConfigSchema, response.data);
+        if (!valid) {
+          throw new Error('Failed');
+        } 
+        
         this.config = response.data;
         this.setState({ loading: false });
       })
