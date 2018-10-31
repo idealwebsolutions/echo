@@ -49,9 +49,10 @@ class App extends Component {
   componentDidMount () {
     const { configPath } = this.props;
     this.setState({ loading: true });
-    getConfiguration()
+    getConfiguration(configPath)
       .then((response) => {
         const valid = validateSchema(ConfigSchema, response.data);
+        
         if (!valid) {
           throw new Error('Failed');
         } 

@@ -1,11 +1,11 @@
 import { Component } from 'inferno';
 
-const withDatabase = (WrappedComponent) => {
+const withDatabase = (props) => (WrappedComponent) => {
   class RealtimeDatabase extends Component {
     componentDidMount () {
       importApp().then((app) => {
         importDatabase().then(() => {
-          const db = app.initializeApp(config).database()
+          const db = app.initializeApp(props.config).database()
         })
       })
     }

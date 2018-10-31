@@ -4,7 +4,7 @@ export const ConfigSchema = {
   properties: {
     firebase: {
       required: true,
-      type: 'string'
+      type: 'object'
     }
   }
 };

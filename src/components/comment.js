@@ -1,7 +1,5 @@
 import { Component, Fragment } from 'inferno';
-import { initializeApp } from 'firebase/app';
-
-const loadDatabase = (config) => initializeApp(config).database()
+import { withDatabase } from './firebase';
 
 class Comment extends Component {
   constructor (props) {
@@ -15,4 +13,4 @@ class CommentList extends Component {
   }
 }
 
-export default CommentList;
+export default withDatabase(CommentList);

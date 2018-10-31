@@ -1,4 +1,5 @@
 import { Component } from 'inferno';
+import Image from 'react-image-resizer';
 import hashicon from 'hashicon';
 
 class Icon extends Component {
