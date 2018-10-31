@@ -54,7 +54,8 @@ class App extends Component {
         const valid = validateSchema(ConfigSchema, response.data);
         
         if (!valid) {
-          throw new Error('Failed');
+          // TODO: render error message
+          return;
         } 
         
         this.config = response.data;
@@ -68,7 +69,7 @@ class App extends Component {
 
   render () {
     return (
-      <Frame style={{ 'min-width': '100%', overflow: 'hidden', border: 'none' }}>
+      <Frame style={{ 'min-width': '100%', 'min-height': '320px', overflow: 'hidden', border: 'none' }}>
         <Base>
           {this.state.loading ? <Loading /> : <Root />}
         </Base>

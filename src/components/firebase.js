@@ -1,33 +1,36 @@
 import { Component } from 'inferno';
 
-const withDatabase = (props) => (WrappedComponent) => {
+const withDatabase = (WrappedComponent) => {
   class RealtimeDatabase extends Component {
     componentDidMount () {
       importApp().then((app) => {
         importDatabase().then(() => {
-          const db = app.initializeApp(props.config).database()
+          /*const db = app.initializeApp().database();
+          db.ref('/').once('value').then((snapshot) => {
+            console.log(snapshot.val())
+          })*/
         })
+      }).catch((err) => {
+        console.error(err)
       })
     }
 
     render () {
-      return (
-        <WrappedComponent>
-      )
+      return <WrappedComponent />
     }
   }
+
+  return RealtimeDatabase;
 }
 
 const withStorage = (WrappedComponent) => {
-  class Storage extends Component {
-  }
 }
 
 const withAuth = (WrappedComponent) => {
 }
 
 function importApp () {
-  return import('firebase/app');
+  return import(/* chunkname: 'firebase-app' */ 'firebase/app');
 }
 
 function importDatabase () {
@@ -42,6 +45,6 @@ function importAuth () {
   return import(/* chunkname: 'firebase-auth' */ 'firebase/auth');
 }
 
-export withDatabase;
-export withStorage;
-export withAuth;
+export default withDatabase;
+// export withStorage;
+// export withAuth;

@@ -1,7 +1,8 @@
 import { Fragment } from 'inferno';
 
 import Toolbar from './toolbar';
-// import CommentList from './comment';
+import Editor from './editor';
+import CommentList from './comment';
 
 export default () =>
   <Fragment>
@@ -9,6 +10,8 @@ export default () =>
       <Toolbar />
     </header>
     <main>
+      <Editor />
+      <CommentList />
     </main>
     <footer>
     </footer>
