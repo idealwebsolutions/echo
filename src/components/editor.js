@@ -1,8 +1,15 @@
-import { Component, Fragment } from 'inferno';
-// import ReactMarkdown from 'react-markdown';
+import { Component, Fragment, linkEvent } from 'inferno';
+import Loadable from 'inferno-loadable';
 import Style from 'style-it';
 
-const StyledEditor = ({ state }) => (
+import Loading from './loading';
+
+const Preview = Loadable({
+  loader: () => import('react-markdown'),
+  loading: Loading
+})
+
+const Editor = (props) => (
   <Style>
     {`
       .editor {
@@ -19,6 +26,8 @@ const StyledEditor = ({ state }) => (
       className='editor'
       rows={4}
       placeholder='Add to the discussion...'
+      value={props.post}
+      onInput={props.onInput}
     />
   </Style>
 )
@@ -40,7 +49,7 @@ const ActionBar = ({ children }) => (
   </Style>
 )
 
-class Editor extends Component {
+class TextEditor extends Component {
   constructor (props) {
     super(props);
 
@@ -50,14 +59,17 @@ class Editor extends Component {
     };
   }
 
-  updatePost ({ target }) {
-    console.log(target)
+  handleInput (component, event) {
+    component.setState({ post: event.target.value })
   }
 
   render () {
     return (
       <Fragment>
-        <StyledEditor {...this.state} />
+        <Editor 
+          post={this.state.post} 
+          onInput={linkEvent(this, this.handleInput)} 
+        />
         <ActionBar>
         </ActionBar>
       </Fragment>
@@ -65,4 +77,4 @@ class Editor extends Component {
   }
 }
 
-export default Editor;
+export default TextEditor;

@@ -1,5 +1,7 @@
 import { Component, Fragment } from 'inferno';
-import withDatabase from './firebase';
+
+import Placeholder from './placeholder';
+import { withDatabase } from './firebase';
 
 class Comment extends Component {
   constructor (props) {
@@ -16,7 +18,7 @@ class CommentList extends Component {
   }
 
   render () {
-    return <div></div>
+    return <Placeholder title="No comments found"></Placeholder>
   }
 }
 

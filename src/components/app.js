@@ -13,6 +13,8 @@ const Base = ({ children }) => (
   <Style>
     {`
       @import url('https://fonts.googleapis.com/css?family=Pontano+Sans');
+      @import url('https://unpkg.com/ionicons@4.4.6/dist/css/ionicons.min.css');
+
       .base {
         font-family: 'Pontano Sans', sans-serif;
       }
@@ -33,23 +35,21 @@ class App extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      loading: false,
+      ready: false,
       authenticated: {}
     };
     this.config = {}
-    this.updateUser = this.updateUser.bind(this);
   }
 
-  updateUser (user) {
+  updateAuthState (user) {
     this.setState({
       authenticated: !user ? {} : user
     });
   }
 
   componentDidMount () {
-    const { configPath } = this.props;
-    this.setState({ loading: true });
-    getConfiguration(configPath)
+    this.setState({ ready: false });
+    getConfiguration(this.props.configPath)
       .then((response) => {
         const valid = validateSchema(ConfigSchema, response.data);
         
@@ -59,7 +59,7 @@ class App extends Component {
         } 
         
         this.config = response.data;
-        this.setState({ loading: false });
+        this.setState({ ready: true });
       })
       .catch((error) => {
         // TODO: do something
@@ -71,7 +71,7 @@ class App extends Component {
     return (
       <Frame style={{ 'min-width': '100%', 'min-height': '320px', overflow: 'hidden', border: 'none' }}>
         <Base>
-          {this.state.loading ? <Loading /> : <Root />}
+          {this.state.ready ? <Root config={this.config} /> : <Loading />}
         </Base>
       </Frame>
     );

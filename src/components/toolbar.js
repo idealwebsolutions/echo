@@ -1,6 +1,8 @@
 import { Fragment } from 'inferno';
 import Style from 'style-it';
 
+import LoginScreen from './login';
+
 const Level = ({ children }) => (
   <Style>
     {` 
@@ -25,11 +27,9 @@ const LevelItem = ({ children }) => (
   </Style>
 )
 
-export default () =>
+export default (props) =>
   <Fragment>
     <Level>
-      <LevelItem>
-        0 comments
-      </LevelItem>
+      <LoginScreen config={props.config} />
     </Level>
   </Fragment>

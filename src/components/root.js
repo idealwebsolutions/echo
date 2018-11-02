@@ -1,17 +1,17 @@
 import { Fragment } from 'inferno';
 
 import Toolbar from './toolbar';
-import Editor from './editor';
+import TextEditor from './editor';
 import CommentList from './comment';
 
-export default () =>
+export default (props) =>
   <Fragment>
     <header>
-      <Toolbar />
+      <Toolbar config={props.config} />
     </header>
     <main>
-      <Editor />
-      <CommentList />
+      <TextEditor />
+      <CommentList config={props.config} />
     </main>
     <footer>
     </footer>

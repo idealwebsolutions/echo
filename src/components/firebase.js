@@ -1,6 +1,6 @@
 import { Component } from 'inferno';
 
-const withDatabase = (WrappedComponent) => {
+const withDatabase = (WrappedComponent) => ( 
   class RealtimeDatabase extends Component {
     componentDidMount () {
       importApp().then((app) => {
@@ -19,9 +19,7 @@ const withDatabase = (WrappedComponent) => {
       return <WrappedComponent />
     }
   }
-
-  return RealtimeDatabase;
-}
+)
 
 const withStorage = (WrappedComponent) => {
 }
@@ -45,6 +43,6 @@ function importAuth () {
   return import(/* chunkname: 'firebase-auth' */ 'firebase/auth');
 }
 
-export default withDatabase;
+export { withDatabase, importApp, importAuth };
 // export withStorage;
 // export withAuth;
