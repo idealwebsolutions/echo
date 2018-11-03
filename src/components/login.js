@@ -38,7 +38,7 @@ class LoginScreen extends Component {
               ])
             } 
             firebaseAuth={this.fb.auth()} />
-          : <div id="firebaseui_container"></div>}
+          : <div id="firebaseui-auth-container"></div>}
       </Fragment>
     )
   }

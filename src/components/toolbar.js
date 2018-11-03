@@ -1,7 +1,7 @@
 import { Fragment } from 'inferno';
 import Style from 'style-it';
 
-import LoginScreen from './login';
+// import LoginScreen from './login';
 
 const Level = ({ children }) => (
   <Style>
@@ -9,7 +9,7 @@ const Level = ({ children }) => (
       .level { 
         display: flex;
         padding: 10px;
-        border-bottom: 2px #000000 solid;
+        border-bottom: 2px #1C1C1C solid;
       } 
     `}
     <nav className="level">{children}</nav>
@@ -30,6 +30,8 @@ const LevelItem = ({ children }) => (
 export default (props) =>
   <Fragment>
     <Level>
-      <LoginScreen config={props.config} />
+      <LevelItem>
+        0 comments
+      </LevelItem>
     </Level>
   </Fragment>

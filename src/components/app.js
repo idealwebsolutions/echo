@@ -14,6 +14,10 @@ const Base = ({ children }) => (
     {`
       @import url('https://fonts.googleapis.com/css?family=Pontano+Sans');
       @import url('https://unpkg.com/ionicons@4.4.6/dist/css/ionicons.min.css');
+      
+      * {
+        box-sizing: border-box;
+      }
 
       .base {
         font-family: 'Pontano Sans', sans-serif;

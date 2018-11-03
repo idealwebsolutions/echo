@@ -15,8 +15,9 @@ const Editor = (props) => (
       .editor {
         resize: none;
         margin: 8px 0;
-        padding: 15px 15px 10px 15px;
-        width: 95%;
+        padding: 10px;
+        width: 100%;
+        max-width: 100%;
         border: 2px solid #adafbd;
         border-bottom: none;
       }
@@ -38,9 +39,9 @@ const ActionBar = ({ children }) => (
       .action-bar {
         display: flex;
         margin-top: -8px;
-        padding: 5px;
-        height: 30px;
-        width: 98.2%;
+        min-height: 40px;
+        width: 100%;
+        max-width: 100%;
         background-color: #adafbd;
         border: 2px solid #adafbd;
       }
