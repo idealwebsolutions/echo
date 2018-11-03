@@ -1,9 +1,9 @@
 import { Component } from 'inferno';
-import Frame from 'react-frame-component';
 import { get } from 'axios';
 import Style from 'style-it';
 
 import Loading from './loading';
+import ResizableFrame from './frame';
 import Root from './root';
 
 import { ConfigSchema } from '../constants';
@@ -73,11 +73,11 @@ class App extends Component {
 
   render () {
     return (
-      <Frame style={{ 'min-width': '100%', 'min-height': '320px', overflow: 'hidden', border: 'none' }}>
+      <ResizableFrame id="echo-content" style={{ 'min-width': '100%', 'min-height': '320px', overflow: 'hidden', border: 'none' }}>
         <Base>
           {this.state.ready ? <Root config={this.config} /> : <Loading />}
         </Base>
-      </Frame>
+      </ResizableFrame>
     );
   }
 };

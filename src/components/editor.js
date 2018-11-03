@@ -38,7 +38,7 @@ const ActionBar = ({ children }) => (
     {`
       .action-bar {
         display: flex;
-        margin-top: -8px;
+        margin-top: -13px;
         min-height: 40px;
         width: 100%;
         max-width: 100%;

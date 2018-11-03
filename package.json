@@ -19,6 +19,7 @@
     "emoji-dictionary": "^1.0.9",
     "firebase": "^5.5.6",
     "hashicon": "^0.2.0",
+    "iframe-resizer": "^3.6.3",
     "inferno": "^6.0.3",
     "inferno-loadable": "^5.4.3",
     "is-my-json-valid": "^2.16.1",

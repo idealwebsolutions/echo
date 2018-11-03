@@ -45,9 +45,9 @@ class CommentList extends Component {
 
     return (
       <ul class="comments">
-        this.state.comments.map((comment) => {
-          return <Comment />
-        })
+        this.state.comments.map((comment) => (
+          <Comment />
+        ))
       </ul>
     )
   }

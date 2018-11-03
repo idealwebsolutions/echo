@@ -1,3 +1,4 @@
+const { DefinePlugin } = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -12,6 +13,11 @@ module.exports = Object.assign({}, config, {
     minimizer: [new TerserPlugin()]
   },
   plugins: config.plugins.concat([
+    new DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
     new CompressionPlugin(),
     new BundleAnalyzerPlugin()
   ])
