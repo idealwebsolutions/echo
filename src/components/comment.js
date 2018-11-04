@@ -1,34 +1,56 @@
 import { Component, Fragment } from 'inferno';
+// import Loadable from 'inferno-loadable';
+import ReactMarkdown from 'react-markdown';
+import spacetime from 'spacetime';
 
 import Placeholder from './placeholder';
-import Icon from './icon';
+import Avatar from './avatar';
 
 import Style from 'style-it';
 
-const CommentDisplay = (props) => (
+/*
+{
+  id: Number,
+  user: {
+    avatar: Optional<String>,
+    name: String
+  },
+  date: Number,
+  upvotes: Number,
+  downvotes: Number,
+  content: String
+}
+*/
+
+const Comment = (props) => (
   <Style>
     {`
       .comment {
+        display: flex;
+        padding: 10px;
+      }
+
+      .comment-avatar {
+        flex: 1;
+      }
+
+      .comment-container {
+        flex: 2 auto;
+        padding: 15px;
       }
     `}
-    <li className="comment">
-      <article>
-        <header className="comment-header"></header>
+    <li key={props.id} className="comment">
+      <Avatar className="comment-avatar" user={props.user} />
+      <article className="comment-container">
+        <header className="comment-header">
+          <span>{props.user.name}</span>
+        </header>
+        <ReactMarkdown className="comment-body" source={props.content}></ReactMarkdown>
         <footer className="comment-footer"></footer>
       </article>
     </li>
   </Style>
 )
-
-class Comment extends Component {
-  constructor (props) {
-    super(props);
-  }
-
-  render () {
-    return <CommentDisplay />
-  }
-}
 
 class CommentList extends Component {
   constructor (props) {
@@ -43,13 +65,18 @@ class CommentList extends Component {
       return <Placeholder title="No comments found" icon="ion-md-text" />
     }
 
-    return (
-      <ul class="comments">
-        this.state.comments.map((comment) => (
-          <Comment />
-        ))
-      </ul>
-    )
+    const comments = this.state.comments.map((comment) => (
+      <Comment
+        id={comment.id}
+        user={comment.user}
+        date={comment.date}
+        upvotes={comment.upvotes}
+        downvotes={comment.downvotes}
+        content={comment.content}
+      />
+    ));
+
+    return (<ul className="comments">{comments}</ul>)
   }
 }
 

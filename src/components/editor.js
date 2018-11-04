@@ -2,6 +2,7 @@ import { Component, Fragment, linkEvent } from 'inferno';
 import Loadable from 'inferno-loadable';
 import Style from 'style-it';
 
+import LoginScreen from './login';
 import Loading from './loading';
 
 const Preview = Loadable({
@@ -37,7 +38,6 @@ const ActionBar = ({ children }) => (
   <Style>
     {`
       .action-bar {
-        display: flex;
         margin-top: -13px;
         min-height: 40px;
         width: 100%;
@@ -72,6 +72,7 @@ class TextEditor extends Component {
           onInput={linkEvent(this, this.handleInput)} 
         />
         <ActionBar>
+          <LoginScreen config={this.props.config} />
         </ActionBar>
       </Fragment>
     );

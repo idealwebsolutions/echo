@@ -1,4 +1,4 @@
-import { Component, linkEvent, createRef } from 'inferno';
+import { Component, linkEvent } from 'inferno';
 
 import Frame from 'react-frame-component';
 
@@ -7,7 +7,7 @@ import { iframeResizer } from 'iframe-resizer';
 class ResizableFrame extends Component {
   constructor(props) {
     super(props);
-    this.frame = createRef();
+    this.frame = null;
   }
   
   componentWillReceiveProps (nextProps) {
@@ -46,15 +46,14 @@ class ResizableFrame extends Component {
     const doc = element.target.contentDocument;
     
     if (!doc) {
-      console.error('Unable to find contentDocument')
+      console.error('Unable to find contentDocument');
       return;
     }
-
-    const body = doc.getElementsByTagName('body')[0]
+    
+    const body = doc.getElementsByTagName('body')[0];
     const resizerScript = document.createElement('script');
     resizerScript.type = 'text/javascript';
     resizerScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.8/iframeResizer.contentWindow.min.js';
-
     body.appendChild(resizerScript);
     component.resize.bind(component);
   }

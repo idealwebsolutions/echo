@@ -9,14 +9,21 @@ import Root from './root';
 import { ConfigSchema } from '../constants';
 import { validateSchema } from '../util';
 
+// Applies global styles across app
 const Base = ({ children }) => (
   <Style>
     {`
       @import url('https://fonts.googleapis.com/css?family=Pontano+Sans');
       @import url('https://unpkg.com/ionicons@4.4.6/dist/css/ionicons.min.css');
-      
+      @import url('https://cdn.firebase.com/libs/firebaseui/3.4.1/firebaseui.css');
+
       * {
         box-sizing: border-box;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
       }
 
       .base {

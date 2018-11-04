@@ -1,5 +1,5 @@
 import { Component, Fragment } from 'inferno';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import { auth } from 'firebase/app';
 
 import { importApp, importAuth } from './firebase';
 
@@ -11,14 +11,27 @@ class LoginScreen extends Component {
     this.state = {
       ready: false
     };
-    this.fb = null;
   }
 
   componentDidMount () {
     this.setState({ ready: false });
+    //
+    const firebaseui = require('firebaseui');
+    let uiWidget = null;
+    
+    const targetFrame = document.querySelector('#echo-content');
+    // Should find a better way to get ref
+    const container = targetFrame.contentDocument.body.querySelector('#firebaseui_container');
+
     importApp().then((app) => {
       importAuth().then(() => {
-        this.fb = app.initializeApp(this.props.config.firebase);
+        const fb = app.initializeApp(this.props.config.firebase);
+        uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(fb.auth());
+        uiWidget.reset();
+        uiWidget.start(container, LoginUIConfig([
+          auth.GoogleAuthProvider.PROVIDER_ID,
+          auth.EmailAuthProvider.PROVIDER_ID
+        ]));
         this.setState({ ready: true });
       });
     });
@@ -28,19 +41,7 @@ class LoginScreen extends Component {
   }
 
   render () {
-    return (
-      <Fragment>
-        { this.state.ready ?
-          <StyledFirebaseAuth 
-            uiConfig={
-              LoginUIConfig([
-                this.fb.firebase_.auth.GoogleAuthProvider.PROVIDER_ID
-              ])
-            } 
-            firebaseAuth={this.fb.auth()} />
-          : <div id="firebaseui-auth-container"></div>}
-      </Fragment>
-    )
+    return <div id="firebaseui_container"></div>
   }
 }
 

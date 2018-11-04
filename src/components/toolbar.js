@@ -1,8 +1,6 @@
 import { Fragment } from 'inferno';
 import Style from 'style-it';
 
-// import LoginScreen from './login';
-
 const Level = ({ children }) => (
   <Style>
     {` 
@@ -30,8 +28,6 @@ const LevelItem = ({ children }) => (
 export default (props) =>
   <Fragment>
     <Level>
-      <LevelItem>
-        0 comments
-      </LevelItem>
+      <LevelItem>0 comments</LevelItem>
     </Level>
   </Fragment>

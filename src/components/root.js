@@ -10,7 +10,7 @@ export default (props) =>
       <Toolbar config={props.config} />
     </header>
     <main>
-      <TextEditor />
+      <TextEditor config={props.config} />
       <CommentList config={props.config} />
     </main>
     <footer>
