@@ -1,4 +1,5 @@
 import { Fragment } from 'inferno';
+// import Select from 'react-select';
 import Style from 'style-it';
 
 const Level = ({ children }) => (
@@ -6,28 +7,41 @@ const Level = ({ children }) => (
     {` 
       .level { 
         display: flex;
-        padding: 10px;
-        border-bottom: 2px #1C1C1C solid;
+        justify-content: space-between;
+        width: 100%;
+        padding: 1px;
+        margin-bottom: 5px;
       } 
     `}
     <nav className="level">{children}</nav>
   </Style>
 )
 
-const LevelItem = ({ children }) => (
+const LevelItem = ({ props, children }) => (
   <Style>
     {`
       .level-item {
-        flex: 1 auto;
+        flex: props.flex;
       }
     `}
     <div className="level-item">{children}</div>
   </Style>
 )
 
+const options = [
+  { value: 'new', label: 'Sort by Newest' },
+  { value: 'old', label: 'Sort by Oldest' },
+  { value: 'best', label: 'Sort by Best' }
+]
+
 export default (props) =>
   <Fragment>
     <Level>
-      <LevelItem>0 comments</LevelItem>
+      <LevelItem flex={5}>0 comments</LevelItem>
+      <LevelItem flex={1}>
+        <select>
+          <option value="old">Sort by oldest</option>
+        </select>
+      </LevelItem>
     </Level>
   </Fragment>

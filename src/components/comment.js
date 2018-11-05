@@ -9,7 +9,7 @@ import Avatar from './avatar';
 import Style from 'style-it';
 
 /*
-{
+Comment {
   id: Number,
   user: {
     avatar: Optional<String>,
@@ -36,17 +36,47 @@ const Comment = (props) => (
 
       .comment-container {
         flex: 2 auto;
-        padding: 15px;
+        margin-left: 15px;
+      }
+
+      .comment-header, .comment-footer {
+        display: flex;
+        flex-direction: row;
+        font-size: 0.9rem;
+      }
+
+      .comment-author {
+        color: #FF5733;
+        font-weight: bold;
+      }
+
+      .comment-date {
+        margin-left: 15px;
+      }
+
+      .comment-footer > .icon {
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      .comment-footer > .icon:not(:first-child):not(:last-child) {
+        margin-left: 15px;
+        margin-right: 15px;
       }
     `}
     <li key={props.id} className="comment">
       <Avatar className="comment-avatar" user={props.user} />
       <article className="comment-container">
         <header className="comment-header">
-          <span>{props.user.name}</span>
+          <span className="comment-author">{props.user.name}</span>
+          <span className="comment-date">{spacetime(props.date).fromNow().qualified}</span>
         </header>
-        <ReactMarkdown className="comment-body" source={props.content}></ReactMarkdown>
-        <footer className="comment-footer"></footer>
+        <ReactMarkdown className="comment-body" source={props.content} />
+        <footer className="comment-footer">
+          <i className="icon ion-ios-arrow-up"></i>
+          <i className="icon ion-ios-arrow-down"></i>
+          <i className="icon ion-ios-flag"></i>
+        </footer>
       </article>
     </li>
   </Style>
