@@ -72,7 +72,7 @@ class TextEditor extends Component {
           onInput={linkEvent(this, this.handleInput)} 
         />
         <ActionBar>
-          <LoginScreen config={this.props.config} />
+          <LoginScreen fb={this.props.fb} />
         </ActionBar>
       </Fragment>
     );

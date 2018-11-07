@@ -1,7 +1,7 @@
 import { Component, Fragment } from 'inferno';
 import { auth } from 'firebase/app';
 
-import { importApp, importAuth } from './firebase';
+import { importAuth } from '../firebase';
 
 import { LoginUIConfig } from '../constants';
 
@@ -23,17 +23,15 @@ class LoginScreen extends Component {
     // Should find a better way to get ref
     const container = targetFrame.contentDocument.body.querySelector('#firebaseui_container');
 
-    importApp().then((app) => {
-      importAuth().then(() => {
-        const fb = app.initializeApp(this.props.config.firebase);
-        uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(fb.auth());
-        uiWidget.reset();
-        uiWidget.start(container, LoginUIConfig([
-          auth.GoogleAuthProvider.PROVIDER_ID,
-          auth.EmailAuthProvider.PROVIDER_ID
-        ]));
-        this.setState({ ready: true });
-      });
+    importAuth().then(() => {
+      const fb = this.props.fb;
+      uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(fb.auth());
+      uiWidget.reset();
+      uiWidget.start(container, LoginUIConfig([
+        auth.GoogleAuthProvider.PROVIDER_ID,
+        auth.EmailAuthProvider.PROVIDER_ID
+      ]));
+      this.setState({ ready: true });
     });
   }
 

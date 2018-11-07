@@ -7,11 +7,11 @@ import CommentList from './comment';
 export default (props) =>
   <Fragment>
     <header>
-      <Toolbar config={props.config} />
+      <Toolbar />
     </header>
     <main>
-      <TextEditor config={props.config} />
-      <CommentList config={props.config} />
+      <TextEditor fb={props.fb} />
+      <CommentList fb={props.fb} />
     </main>
     <footer>
     </footer>

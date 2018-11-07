@@ -6,6 +6,7 @@ import Loading from './loading';
 import ResizableFrame from './frame';
 import Root from './root';
 
+import { importApp, importDatabase } from '../firebase';
 import { ConfigSchema } from '../constants';
 import { validateSchema } from '../util';
 
@@ -49,7 +50,7 @@ class App extends Component {
       ready: false,
       authenticated: {}
     };
-    this.config = {}
+    this.fb = null;
   }
 
   updateAuthState (user) {
@@ -69,20 +70,28 @@ class App extends Component {
           return;
         } 
         
-        this.config = response.data;
-        this.setState({ ready: true });
+        importApp().then((app) => {
+          importDatabase().then(() => {
+            this.fb = app.initializeApp(response.data.firebase);
+            const db = this.fb.database();
+            db.ref('/demo').once('value').then((snapshot) => {
+              console.log(snapshot.val())
+            });
+            this.setState({ ready: true });
+          });
+        });
       })
       .catch((error) => {
         // TODO: do something
         console.error(error);
-      })
+      });
   }
 
   render () {
     return (
       <ResizableFrame id="echo-content" style={{ 'min-width': '100%', 'min-height': '320px', overflow: 'hidden', border: 'none' }}>
         <Base>
-          {this.state.ready ? <Root config={this.config} /> : <Loading />}
+          {this.state.ready ? <Root fb={this.fb} /> : <Loading />}
         </Base>
       </ResizableFrame>
     );

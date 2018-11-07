@@ -2,11 +2,11 @@ import { Component, Fragment } from 'inferno';
 // import Loadable from 'inferno-loadable';
 import ReactMarkdown from 'react-markdown';
 import spacetime from 'spacetime';
+import Style from 'style-it';
 
 import Placeholder from './placeholder';
 import Avatar from './avatar';
-
-import Style from 'style-it';
+import { importStorage } from '../firebase';
 
 /*
 Comment {
