@@ -3,14 +3,16 @@ import { auth } from 'firebase/app';
 
 import { importAuth } from '../firebase';
 
-import { LoginUIConfig } from '../constants';
+import { generateLoginConfig, Noop } from '../util';
 
 class LoginScreen extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      ready: false
+      ready: false,
+      signedIn: false
     };
+    this.unregisterAuthObserver = Noop;
   }
 
   componentDidMount () {
@@ -24,10 +26,15 @@ class LoginScreen extends Component {
     const container = targetFrame.contentDocument.body.querySelector('#firebaseui_container');
 
     importAuth().then(() => {
-      const fb = this.props.fb;
-      uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(fb.auth());
+      uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.props.fb.auth());
       uiWidget.reset();
-      uiWidget.start(container, LoginUIConfig([
+      this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
+        if (!user && this.state.signedIn) {
+          uiWidget.reset();
+        }
+        this.state.signedIn = !!user;
+      });
+      uiWidget.start(container, generateLoginConfig([
         auth.GoogleAuthProvider.PROVIDER_ID,
         auth.EmailAuthProvider.PROVIDER_ID
       ]));
@@ -36,6 +43,7 @@ class LoginScreen extends Component {
   }
 
   componentWillUnmount () {
+  
   }
 
   render () {

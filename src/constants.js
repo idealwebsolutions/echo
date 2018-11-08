@@ -2,24 +2,29 @@ export const ConfigSchema = {
   required: true,
   type: 'object',
   properties: {
-    firebase: {
+    apiKey: {
       required: true,
-      type: 'object'
+      type: 'string',
+    },
+    authDomain: {
+      required: true,
+      type: 'string'
+    },
+    databaseURL: {
+      required: true,
+      type: 'string'
+    },
+    projectId: {
+      required: true,
+      type: 'string'
+    },
+    storageBucket: {
+      required: true,
+      type: 'string'
+    },
+    messagingSenderId: {
+      required: true,
+      type: 'string'
     }
   }
 };
-
-export function LoginUIConfig (providers = []) {
-  if (!providers.length) {
-    throw new RangeError('One login provider must be provided');
-  }
-  
-  return {
-    signInFlow: 'popup',
-    signInOptions: providers,
-    callbacks: {
-      // Avoid redirects after sign-in
-      signInSuccessWithAuthResult: () => false
-    }
-  };
-}

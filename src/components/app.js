@@ -1,4 +1,4 @@
-import { Component } from 'inferno';
+import { Component, linkEvent } from 'inferno';
 import { get } from 'axios';
 import Style from 'style-it';
 
@@ -68,16 +68,19 @@ class App extends Component {
         if (!valid) {
           // TODO: render error message
           return;
-        } 
+        }
+
+        console.log(window.location.pathname);
         
         importApp().then((app) => {
           importDatabase().then(() => {
-            this.fb = app.initializeApp(response.data.firebase);
+            this.fb = app.initializeApp(response.data);
+            
             const db = this.fb.database();
-            db.ref('/demo').once('value').then((snapshot) => {
-              console.log(snapshot.val())
-            });
+
+            db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
             this.setState({ ready: true });
+            // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
           });
         });
       })
@@ -91,7 +94,11 @@ class App extends Component {
     return (
       <ResizableFrame id="echo-content" style={{ 'min-width': '100%', 'min-height': '320px', overflow: 'hidden', border: 'none' }}>
         <Base>
-          {this.state.ready ? <Root fb={this.fb} /> : <Loading />}
+          {this.state.ready ? 
+            <Root 
+              fb={this.fb} 
+              handleAuthState={linkEvent(this, this.handleAuthState)} 
+            /> : <Loading />}
         </Base>
       </ResizableFrame>
     );
