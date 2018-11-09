@@ -1,3 +1,4 @@
+export const FirebaseUIContainer = 'firebaseui_container';
 export const ConfigSchema = {
   required: true,
   type: 'object',
