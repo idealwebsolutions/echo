@@ -22,10 +22,8 @@ class LoginScreen extends React.Component {
     importAuth().then(() => {
       this.uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.props.fb.auth());
       this.uiWidget.reset();
-      
       this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
         if (!user && this.state.signedIn) {
-          console.log('reset');
           this.uiWidget.reset();
           this.renderWidget(generateLoginConfig([
             auth.GoogleAuthProvider.PROVIDER_ID,
@@ -34,13 +32,6 @@ class LoginScreen extends React.Component {
         }
 
         this.setState({ signedIn: !!user });
-        
-        if (user) {
-          // Temp fix for broken fn call
-          /*document.querySelector('#echo-content').contentDocument.body.querySelector('#sign-out').addEventListener(
-            'click', () => this.props.fb.auth().signOut()
-          )*/
-        }
       });
       
       // this.uiWidget.disableAutoSignIn();
@@ -67,7 +58,7 @@ class LoginScreen extends React.Component {
       return (
         <div id={FirebaseUIContainer}>
           <div>Signed in as {this.props.fb.auth().currentUser.displayName}</div>
-          <button id="sign-out" onClick={() => console.log('sas')}>Sign out</button>
+          <button id="sign-out" onClick={() => this.props.fb.auth().signOut()}>Sign out</button>
         </div>
       )
     }

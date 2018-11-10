@@ -67,6 +67,7 @@ class App extends React.Component {
         
         if (!valid) {
           // TODO: render error message
+          console.error('invalid schema');
           return;
         }
 
@@ -79,8 +80,9 @@ class App extends React.Component {
             const db = this.fb.database();
 
             db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
-            this.setState({ ready: true });
+            //this.setState({ ready: true });
             // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
+            this.setState({ ready: true });
           });
         });
       })

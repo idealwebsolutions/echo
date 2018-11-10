@@ -4,9 +4,12 @@ import Frame from 'react-frame-component';
 import { iframeResizer } from 'iframe-resizer';
 
 class ResizableFrame extends React.Component {
-  /*componentDidMount () {
-    this.resize();
-  }*/
+  constructor (props) {
+    super(props);
+    this.state = {
+      ready: false
+    };
+  }
   
   componentWillReceiveProps (nextProps) {
     this.resize();
@@ -23,14 +26,14 @@ class ResizableFrame extends React.Component {
   }
 
   resize () {
-    if (!this.refs.frame) {
+    if (!this.refs.frame.node) {
       return;
     }
 
     iframeResizer({
       log: true,
       checkOrigin: false
-    }, this.refs.frame);
+    }, this.refs.frame.node);
   }
 
   injectContentWindow (element) {
@@ -51,7 +54,7 @@ class ResizableFrame extends React.Component {
     resizerScript.type = 'text/javascript';
     resizerScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.8/iframeResizer.contentWindow.min.js';
     body.appendChild(resizerScript);
-    this.resize.bind(this);
+    this.setState({ ready: true });
   }
   
   render () {
