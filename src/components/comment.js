@@ -1,4 +1,4 @@
-import { Component, Fragment } from 'inferno';
+import React from 'react';
 // import Loadable from 'inferno-loadable';
 import ReactMarkdown from 'react-markdown';
 import spacetime from 'spacetime';
@@ -82,7 +82,7 @@ const Comment = (props) => (
   </Style>
 )
 
-class CommentList extends Component {
+class CommentList extends React.Component {
   constructor (props) {
     super(props);
     this.state = {

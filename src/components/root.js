@@ -1,11 +1,11 @@
-import { Fragment } from 'inferno';
+import React from 'react';
 
 import Toolbar from './toolbar';
 import TextEditor from './editor';
 import CommentList from './comment';
 
 export default (props) =>
-  <Fragment>
+  <React.Fragment>
     <header>
       <Toolbar />
     </header>
@@ -15,4 +15,4 @@ export default (props) =>
     </main>
     <footer>
     </footer>
-  </Fragment>
+  </React.Fragment>

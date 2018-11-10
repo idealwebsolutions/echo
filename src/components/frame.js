@@ -1,21 +1,19 @@
-import { Component, linkEvent } from 'inferno';
+import React from 'react';
 
 import Frame from 'react-frame-component';
-
 import { iframeResizer } from 'iframe-resizer';
 
-class ResizableFrame extends Component {
-  constructor(props) {
-    super(props);
-    this.frame = null;
-  }
+class ResizableFrame extends React.Component {
+  /*componentDidMount () {
+    this.resize();
+  }*/
   
   componentWillReceiveProps (nextProps) {
     this.resize();
   }
 
   componentWillUnmount () {
-    const iFrameResizer = this.frame.iFrameResizer;
+    const iFrameResizer = this.refs.frame.iFrameResizer;
     
     if (!iFrameResizer) {
       return;
@@ -25,19 +23,17 @@ class ResizableFrame extends Component {
   }
 
   resize () {
-    if (!this.frame) {
+    if (!this.refs.frame) {
       return;
     }
-    
+
     iframeResizer({
       log: true,
       checkOrigin: false
-    }, this.frame);
+    }, this.refs.frame);
   }
 
-  _injectContentWindow (component, element) {
-    component.frame = element.target;
-    
+  injectContentWindow (element) {
     if (!element.target) {
       console.error('Unable to find frame ref');
       return;
@@ -55,14 +51,13 @@ class ResizableFrame extends Component {
     resizerScript.type = 'text/javascript';
     resizerScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.8/iframeResizer.contentWindow.min.js';
     body.appendChild(resizerScript);
-    component.resize.bind(component);
+    this.resize.bind(this);
   }
   
-  render ({ children }) {
-    const { id, style } = this.props;
+  render () {
     return (
-      <Frame ref={this.element} id={id} style={style} onLoad={linkEvent(this, this._injectContentWindow)}>
-        {children}
+      <Frame ref='frame' id={this.props.id} style={this.props.style} onLoad={this.injectContentWindow.bind(this)}>
+        {this.props.children}
       </Frame>
     )
   }

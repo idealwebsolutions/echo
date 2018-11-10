@@ -1,19 +1,19 @@
-import { Component, Fragment, linkEvent } from 'inferno';
-import Loadable from 'inferno-loadable';
+import React from 'react';
+// import Loadable from 'inferno-loadable';
 import Style from 'style-it';
 
 import LoginScreen from './login';
 import Loading from './loading';
 
-const Preview = Loadable({
+/*const Preview = Loadable({
   loader: () => import('react-markdown'),
   loading: Loading
-})
+})*/
 
 const Editor = (props) => (
   <Style>
     {`
-      .editor {
+      .editor textarea {
         resize: none;
         margin: 8px 0;
         padding: 10px;
@@ -23,14 +23,15 @@ const Editor = (props) => (
         border-bottom: none;
       }
     `}
-    <textarea 
-      name='post' 
-      className='editor'
-      rows={4}
-      placeholder='Add to the discussion...'
-      value={props.post}
-      onInput={props.onInput}
-    />
+    <div className='editor'>
+      <textarea 
+        name='post' 
+        rows={4}
+        placeholder='Add to the discussion...'
+        value={props.post}
+        onChange={props.onChange}
+      />
+    </div>
   </Style>
 )
 
@@ -50,7 +51,7 @@ const ActionBar = ({ children }) => (
   </Style>
 )
 
-class TextEditor extends Component {
+class TextEditor extends React.Component {
   constructor (props) {
     super(props);
 
@@ -60,21 +61,21 @@ class TextEditor extends Component {
     };
   }
 
-  handleInput (component, event) {
-    component.setState({ post: event.target.value })
+  handleInput (event) {
+    this.setState({ post: event.target.value })
   }
 
   render () {
     return (
-      <Fragment>
+      <React.Fragment>
         <Editor 
           post={this.state.post} 
-          onInput={linkEvent(this, this.handleInput)} 
+          onChange={this.handleInput.bind(this)} 
         />
         <ActionBar>
           <LoginScreen fb={this.props.fb} />
         </ActionBar>
-      </Fragment>
+      </React.Fragment>
     );
   }
 }

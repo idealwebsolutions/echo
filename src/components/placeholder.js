@@ -1,4 +1,4 @@
-import { Fragment } from 'inferno';
+import React from 'react';
 import Style from 'style-it';
 
 const Placeholder = (props) => (
@@ -19,7 +19,7 @@ const Placeholder = (props) => (
         box-sizing: border-box;
       }
     `}
-    <div class="placeholder">
+    <div className="placeholder">
       <i className={`icon ${props.icon}`}></i>
       <h3 className="title">{props.title}</h3>
     </div>

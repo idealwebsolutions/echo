@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { Component } from 'inferno';
+import React from 'react';
 // import Image from 'react-image-resizer';
 import Style from 'style-it';
 import uuidv4 from 'uuid/v4';
@@ -18,7 +18,7 @@ const AvatarContainer = (props) => (
   </Style>
 );
 
-class Avatar extends Component {
+class Avatar extends React.Component {
   constructor (props) {
     super(props);
     this.state = {

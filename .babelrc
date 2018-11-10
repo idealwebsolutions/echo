@@ -1,4 +1,4 @@
 {
   "presets": ["@babel/preset-env"],
-  "plugins": ["babel-plugin-inferno", "syntax-dynamic-import"]
+  "plugins": ["@babel/plugin-transform-react-jsx", "syntax-dynamic-import"]
 }

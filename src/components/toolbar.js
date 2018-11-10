@@ -1,5 +1,4 @@
-import { Fragment } from 'inferno';
-// import Select from 'react-select';
+import React from 'react';
 import Style from 'style-it';
 
 const Level = ({ children }) => (
@@ -35,13 +34,9 @@ const options = [
 ]
 
 export default (props) =>
-  <Fragment>
+  <React.Fragment>
     <Level>
       <LevelItem flex={5}>0 comments</LevelItem>
-      <LevelItem flex={1}>
-        <select>
-          <option value="old">Sort by oldest</option>
-        </select>
-      </LevelItem>
+      <LevelItem></LevelItem>
     </Level>
-  </Fragment>
+  </React.Fragment>

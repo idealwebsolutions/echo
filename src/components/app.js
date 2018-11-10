@@ -1,4 +1,4 @@
-import { Component, linkEvent } from 'inferno';
+import React from 'react';
 import { get } from 'axios';
 import Style from 'style-it';
 
@@ -43,7 +43,7 @@ const Base = ({ children }) => (
 
 const getConfiguration = (path) => get(`${path ? path : 'config.json'}`)
 
-class App extends Component {
+class App extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -92,12 +92,11 @@ class App extends Component {
 
   render () {
     return (
-      <ResizableFrame id="echo-content" style={{ 'min-width': '100%', 'min-height': '320px', overflow: 'hidden', border: 'none' }}>
+      <ResizableFrame id="echo-content" style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
         <Base>
           {this.state.ready ? 
             <Root 
               fb={this.fb} 
-              handleAuthState={linkEvent(this, this.handleAuthState)} 
             /> : <Loading />}
         </Base>
       </ResizableFrame>

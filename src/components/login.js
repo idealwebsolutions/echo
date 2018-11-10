@@ -1,4 +1,4 @@
-import { Component, Fragment, linkEvent } from 'inferno';
+import React from 'react';
 import { auth } from 'firebase/app';
 
 import { importAuth } from '../firebase';
@@ -6,51 +6,48 @@ import { importAuth } from '../firebase';
 import { FirebaseUIContainer } from '../constants';
 import { generateLoginConfig, Noop } from '../util';
 
-class LoginScreen extends Component {
+class LoginScreen extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      ready: false,
       signedIn: false
     };
+    this.uiWidget = null;
     this.unregisterAuthObserver = Noop;
   }
 
   componentDidMount () {
-    this.setState({ ready: false });
-    //
     const firebaseui = require('firebaseui');
-    let uiWidget = null;
-    
-    const targetFrame = document.querySelector('#echo-content');
-    // Should find a better way to get ref
-    const container = targetFrame.contentDocument.body.querySelector(`#${FirebaseUIContainer}`);
-
+    //
     importAuth().then(() => {
-      uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.props.fb.auth());
-      uiWidget.reset();
+      this.uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.props.fb.auth());
+      this.uiWidget.reset();
       
       this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
         if (!user && this.state.signedIn) {
-          uiWidget.reset();
+          console.log('reset');
+          this.uiWidget.reset();
+          this.renderWidget(generateLoginConfig([
+            auth.GoogleAuthProvider.PROVIDER_ID,
+            auth.EmailAuthProvider.PROVIDER_ID
+          ]));
         }
 
         this.setState({ signedIn: !!user });
         
         if (user) {
           // Temp fix for broken fn call
-          targetFrame.contentDocument.body.querySelector('#sign-out').addEventListener(
+          /*document.querySelector('#echo-content').contentDocument.body.querySelector('#sign-out').addEventListener(
             'click', () => this.props.fb.auth().signOut()
-          )
+          )*/
         }
       });
-
-      uiWidget.start(container, generateLoginConfig([
+      
+      // this.uiWidget.disableAutoSignIn();
+      this.renderWidget(generateLoginConfig([
         auth.GoogleAuthProvider.PROVIDER_ID,
         auth.EmailAuthProvider.PROVIDER_ID
       ]));
-      
-      this.setState({ ready: true });
     });
   }
 
@@ -58,13 +55,20 @@ class LoginScreen extends Component {
     this.unregisterAuthObserver();
   }
 
+  renderWidget (loginConfig) {
+    const targetFrame = document.querySelector('#echo-content');
+    const container = targetFrame.contentDocument.body.querySelector(`#${FirebaseUIContainer}`);
+    this.uiWidget.start(container, loginConfig);
+  }
+
   render () {
+    console.log(`is signed in: ${this.state.signedIn}`);
     if (this.state.signedIn) {
       return (
-        <Fragment>
+        <div id={FirebaseUIContainer}>
           <div>Signed in as {this.props.fb.auth().currentUser.displayName}</div>
-          <button id="sign-out">Sign out</button>
-        </Fragment>
+          <button id="sign-out" onClick={() => console.log('sas')}>Sign out</button>
+        </div>
       )
     }
     

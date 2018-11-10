@@ -20,13 +20,6 @@ module.exports = {
     chunkFilename: '[chunkhash].js',
     publicPath: '/assets/'
   },
-  resolve: {
-    alias: {
-      'inferno': join(__dirname, 'node_modules/inferno/dist/index.dev.esm.js'),
-      'react': 'inferno-compat',
-      'react-dom': 'inferno-compat'
-    }
-  },
   module: {
     rules: [
       {

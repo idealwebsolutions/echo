@@ -1,5 +1,6 @@
 import ready from 'document-ready';
-import { render } from 'inferno';
+import React from 'react';
+import { render } from 'react-dom';
 
 import App from './components/app';
 
