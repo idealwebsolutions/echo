@@ -1,5 +1,6 @@
 import React from 'react';
 import { get } from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 import Style from 'style-it';
 
 import Loading from './loading';
@@ -9,6 +10,8 @@ import Root from './root';
 import { importApp, importDatabase } from '../firebase';
 import { ConfigSchema } from '../constants';
 import { validateSchema } from '../util';
+
+import 'react-toastify/dist/ReactToastify.min.css';
 
 // Applies global styles across app
 const Base = ({ children }) => (
@@ -66,9 +69,9 @@ class App extends React.Component {
         const valid = validateSchema(ConfigSchema, response.data);
         
         if (!valid) {
-          // TODO: render error message
-          console.error('invalid schema');
-          return;
+          return toast.error('Invalid schema found: firebase configuration missing', {
+            position: toast.POSITION.BOTTOM_CENTER
+          });
         }
 
         console.log(window.location.pathname);
@@ -94,14 +97,14 @@ class App extends React.Component {
 
   render () {
     return (
-      <ResizableFrame id="echo-content" style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
-        <Base>
-          {this.state.ready ? 
-            <Root 
-              fb={this.fb} 
-            /> : <Loading />}
-        </Base>
-      </ResizableFrame>
+      <React.Fragment>
+        <ResizableFrame id="echo-content" style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
+          <Base>
+            {this.state.ready ? <Root fb={this.fb} /> : <Loading />}
+          </Base>
+        </ResizableFrame>
+        <ToastContainer />
+      </React.Fragment>
     );
   }
 };

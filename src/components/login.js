@@ -29,12 +29,14 @@ class LoginScreen extends React.Component {
             auth.GoogleAuthProvider.PROVIDER_ID,
             auth.EmailAuthProvider.PROVIDER_ID
           ]));
+        } else if (user) {
+          console.log(user)
         }
 
         this.setState({ signedIn: !!user });
       });
       
-      // this.uiWidget.disableAutoSignIn();
+      this.uiWidget.disableAutoSignIn();
       this.renderWidget(generateLoginConfig([
         auth.GoogleAuthProvider.PROVIDER_ID,
         auth.EmailAuthProvider.PROVIDER_ID
@@ -53,7 +55,6 @@ class LoginScreen extends React.Component {
   }
 
   render () {
-    console.log(`is signed in: ${this.state.signedIn}`);
     if (this.state.signedIn) {
       return (
         <div id={FirebaseUIContainer}>
