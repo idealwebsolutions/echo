@@ -10,7 +10,7 @@ export default (props) =>
       <Toolbar />
     </header>
     <main>
-      <TextEditor fb={props.fb} />
+      <TextEditor fb={props.fb} updateAuthState={props.updateAuthState} />
       <CommentList fb={props.fb} />
     </main>
     <footer>

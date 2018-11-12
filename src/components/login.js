@@ -25,12 +25,13 @@ class LoginScreen extends React.Component {
       this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
         if (!user && this.state.signedIn) {
           this.uiWidget.reset();
+          // This shouldn't need to happen, looking into a fix
           this.renderWidget(generateLoginConfig([
             auth.GoogleAuthProvider.PROVIDER_ID,
             auth.EmailAuthProvider.PROVIDER_ID
           ]));
         } else if (user) {
-          console.log(user)
+          this.props.updateAuthState(user);
         }
 
         this.setState({ signedIn: !!user });

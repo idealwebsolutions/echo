@@ -62,6 +62,12 @@ class App extends React.Component {
     });
   }
 
+  alertError (errorMessage) {
+    toast.error(errorMessage, { 
+      position: toast.POSITION.BOTTOM_CENTER 
+    });
+  }
+
   componentDidMount () {
     this.setState({ ready: false });
     getConfiguration(this.props.configPath)
@@ -69,9 +75,7 @@ class App extends React.Component {
         const valid = validateSchema(ConfigSchema, response.data);
         
         if (!valid) {
-          return toast.error('Invalid schema found: firebase configuration missing', {
-            position: toast.POSITION.BOTTOM_CENTER
-          });
+          return this.alertError('Invalid schema found: wrong configuration file');
         }
 
         console.log(window.location.pathname);
@@ -83,24 +87,25 @@ class App extends React.Component {
             const db = this.fb.database();
 
             db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
-            //this.setState({ ready: true });
             // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
             this.setState({ ready: true });
           });
         });
       })
       .catch((error) => {
-        // TODO: do something
         console.error(error);
+        this.alertError('Unable to fetch firebase configuration');
       });
   }
 
   render () {
     return (
       <React.Fragment>
-        <ResizableFrame id="echo-content" style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
+        <ResizableFrame 
+          id="echo-content" 
+          style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
           <Base>
-            {this.state.ready ? <Root fb={this.fb} /> : <Loading />}
+            {this.state.ready ? <Root fb={this.fb} updateAuthState={this.updateAuthState.bind(this)} /> : <Loading />}
           </Base>
         </ResizableFrame>
         <ToastContainer />
