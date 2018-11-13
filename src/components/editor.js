@@ -68,12 +68,10 @@ class TextEditor extends React.Component {
   render () {
     return (
       <React.Fragment>
-        <Editor 
-          post={this.state.post} 
-          onChange={this.handleInput.bind(this)} 
-        />
+        { this.props.user ? <div></div> : <Editor post={this.state.post} onChange={this.handleInput.bind(this)} /> }
         <ActionBar>
-          <LoginScreen fb={this.props.fb} />
+          { this.props.user ? <button>Preview as {this.props.user.displayName}</button> : null }
+          <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />
         </ActionBar>
       </React.Fragment>
     );

@@ -30,14 +30,13 @@ class LoginScreen extends React.Component {
             auth.GoogleAuthProvider.PROVIDER_ID,
             auth.EmailAuthProvider.PROVIDER_ID
           ]));
-        } else if (user) {
-          this.props.updateAuthState(user);
         }
 
         this.setState({ signedIn: !!user });
+        this.props.updateAuthState(user);
       });
       
-      this.uiWidget.disableAutoSignIn();
+      // this.props.fb.auth().disableAutoSignIn();
       this.renderWidget(generateLoginConfig([
         auth.GoogleAuthProvider.PROVIDER_ID,
         auth.EmailAuthProvider.PROVIDER_ID
@@ -59,7 +58,6 @@ class LoginScreen extends React.Component {
     if (this.state.signedIn) {
       return (
         <div id={FirebaseUIContainer}>
-          <div>Signed in as {this.props.fb.auth().currentUser.displayName}</div>
           <button id="sign-out" onClick={() => this.props.fb.auth().signOut()}>Sign out</button>
         </div>
       )

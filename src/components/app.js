@@ -58,8 +58,9 @@ class App extends React.Component {
 
   updateAuthState (user) {
     this.setState({
-      authenticated: !user ? {} : user
+      authenticated: !user || Object.keys(user).length === 0 ? false : user
     });
+    console.log(this.state.authenticated);
   }
 
   alertError (errorMessage) {
@@ -105,7 +106,7 @@ class App extends React.Component {
           id="echo-content" 
           style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
           <Base>
-            {this.state.ready ? <Root fb={this.fb} updateAuthState={this.updateAuthState.bind(this)} /> : <Loading />}
+            {this.state.ready ? <Root fb={this.fb} user={this.state.authenticated} updateAuthState={this.updateAuthState.bind(this)} /> : <Loading />}
           </Base>
         </ResizableFrame>
         <ToastContainer />
