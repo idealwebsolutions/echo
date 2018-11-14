@@ -1,8 +1,8 @@
 import React from 'react';
 import { auth } from 'firebase/app';
 
+import Button from './button';
 import { importAuth } from '../firebase';
-
 import { FirebaseUIContainer } from '../constants';
 import { generateLoginConfig, Noop } from '../util';
 
@@ -25,15 +25,21 @@ class LoginScreen extends React.Component {
       this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
         if (!user && this.state.signedIn) {
           this.uiWidget.reset();
-          // This shouldn't need to happen, looking into a fix
+          /* This shouldn't need to happen, looking into a fix
           this.renderWidget(generateLoginConfig([
             auth.GoogleAuthProvider.PROVIDER_ID,
             auth.EmailAuthProvider.PROVIDER_ID
-          ]));
+          ]));*/
         }
 
         this.setState({ signedIn: !!user });
-        this.props.updateAuthState(user);
+        this.props.updateAuthState(user ? Object.assign({}, {
+          uid: user.uid,
+          name: user.displayName,
+          avatar: user.photoURL,
+          email: user.email,
+          verified: user.emailVerified
+        }) : user);
       });
       
       // this.props.fb.auth().disableAutoSignIn();
@@ -57,12 +63,10 @@ class LoginScreen extends React.Component {
   render () {
     if (this.state.signedIn) {
       return (
-        <div id={FirebaseUIContainer}>
-          <button id="sign-out" onClick={() => this.props.fb.auth().signOut()}>Sign out</button>
-        </div>
+        <Button onClick={() => this.props.fb.auth().signOut()} value='Sign out' />
       )
     }
-    
+    // TODO: requires firebase ui container to exist in both instances 
     return <div id={FirebaseUIContainer}></div>
   }
 }

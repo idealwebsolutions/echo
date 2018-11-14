@@ -16,14 +16,14 @@ const Level = ({ children }) => (
   </Style>
 )
 
-const LevelItem = ({ props, children }) => (
+const LevelItem = (props) => (
   <Style>
     {`
       .level-item {
-        flex: props.flex;
+        flex: ${props.flex};
       }
     `}
-    <div className="level-item">{children}</div>
+    <div className="level-item">{props.children}</div>
   </Style>
 )
 

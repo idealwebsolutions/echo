@@ -1,20 +1,20 @@
 import { createHash } from 'crypto';
 import React from 'react';
-// import Image from 'react-image-resizer';
+import Image from 'react-image-resizer';
 import Style from 'style-it';
 import uuidv4 from 'uuid/v4';
 import hashicon from 'hashicon';
 
-const AvatarContainer = (props) => (
+const GenericAvatar = (props) => (
   <Style>
     {`
-      .avatar-container {
+      .avatar {
         display: flex;
         flex-direction: column;
         justify-content: center;
       }
     `}
-    <div id={props.id} className="avatar-container"></div>
+    <div id={props.id} className="avatar"></div>
   </Style>
 );
 
@@ -27,9 +27,9 @@ class Avatar extends React.Component {
   }
 
   componentDidMount () {
-    //if (!user.avatar) {
-    this.generateTempIcon(this.props.user);
-    //}
+    if (!this.props.user.avatar) {
+      this.generateTempIcon(this.props.user);
+    }
   }
 
   generateTempIcon (user) {
@@ -40,7 +40,8 @@ class Avatar extends React.Component {
   }
 
   render () {
-    return <AvatarContainer id={this.state.uid} />;
+    return this.props.user.avatar ? 
+      <Image src={this.props.user.avatar} height={64} width={64}/> : <GenericAvatar id={this.state.uid} />;
   }
 }
 

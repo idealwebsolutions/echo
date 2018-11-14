@@ -1,14 +1,12 @@
 import React from 'react';
-// import Loadable from 'inferno-loadable';
 import Style from 'style-it';
 
 import LoginScreen from './login';
 import Loading from './loading';
+import Button from './button';
 
-/*const Preview = Loadable({
-  loader: () => import('react-markdown'),
-  loading: Loading
-})*/
+// const Preview = React.lazy(() => import('react-markdown'));
+const Avatar = React.lazy(() => import('./avatar'));
 
 const Editor = (props) => (
   <Style>
@@ -51,6 +49,28 @@ const ActionBar = ({ children }) => (
   </Style>
 )
 
+const Level = ({ children }) => (
+  <Style>
+    {`
+      .level {
+        display: flex;
+      }
+    `}
+    <div className='level'>{children}</div>
+  </Style>
+)
+
+const LevelItem = (props) => (
+  <Style>
+    {`
+      .level-item {
+        flex: ${props.flex};
+      }
+    `}
+    <div className='level-item'>{props.children}</div>
+  </Style>
+)
+
 class TextEditor extends React.Component {
   constructor (props) {
     super(props);
@@ -68,9 +88,20 @@ class TextEditor extends React.Component {
   render () {
     return (
       <React.Fragment>
-        { this.props.user ? <div></div> : <Editor post={this.state.post} onChange={this.handleInput.bind(this)} /> }
+        { this.props.user ? 
+          <Level>
+            <LevelItem flex={1}>
+              <React.Suspense fallback={Loading}>
+                <Avatar user={this.props.user} />
+              </React.Suspense>
+            </LevelItem>
+            <LevelItem flex='5 auto'>
+              <Editor post={this.state.post} onChange={this.handleInput.bind(this)} />
+            </LevelItem>
+          </Level> : <Editor post={this.state.post} onChange={this.handleInput.bind(this)} /> 
+        }
         <ActionBar>
-          { this.props.user ? <button>Preview as {this.props.user.displayName}</button> : null }
+          { this.props.user ? <Button value={`Preview as ${this.props.user.name}`} /> : null }
           <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />
         </ActionBar>
       </React.Fragment>
