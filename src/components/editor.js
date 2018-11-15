@@ -5,6 +5,7 @@ import LoginScreen from './login';
 import Loading from './loading';
 import Button from './button';
 
+import { importStorage } from '../firebase';
 // const Preview = React.lazy(() => import('react-markdown'));
 const Avatar = React.lazy(() => import('./avatar'));
 
@@ -74,15 +75,36 @@ const LevelItem = (props) => (
 class TextEditor extends React.Component {
   constructor (props) {
     super(props);
-
+    
     this.state = {
+      preview: false,
       ready: false,
       post: ''
     };
+    this.storage = null;
   }
 
   handleInput (event) {
-    this.setState({ post: event.target.value })
+    this.setState({ 
+      post: event.target.value, 
+      preview: false 
+    });
+  }
+
+  previewPost () {
+    this.setState({ preview: true });
+  }
+
+  submitPost () {
+  
+  }
+
+  componentWillMount () {
+    if (this.props.user) {
+      importStorage().then(() => {
+        this.storage = this.props.fb.storage();
+      })
+    }
   }
 
   render () {
@@ -101,8 +123,13 @@ class TextEditor extends React.Component {
           </Level> : <Editor post={this.state.post} onChange={this.handleInput.bind(this)} /> 
         }
         <ActionBar>
-          { this.props.user ? <Button value={`Preview as ${this.props.user.name}`} /> : null }
-          <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />
+          { this.props.user ? 
+              <Button 
+                onClick={this.state.preview ? this.previewPost.bind(this) : this.submitPost.bind(this) } 
+                value={this.state.preview ? `Post as ${this.props.user.name}` : 'Preview'} 
+              /> : null 
+          }
+              <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />
         </ActionBar>
       </React.Fragment>
     );

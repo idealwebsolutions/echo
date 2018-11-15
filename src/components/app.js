@@ -4,8 +4,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import Style from 'style-it';
 
 import Loading from './loading';
+import Toolbar from './toolbar';
+import TextEditor from './editor';
+import CommentList from './comment';
 import ResizableFrame from './frame';
-import Root from './root';
 
 import { importApp, importDatabase } from '../firebase';
 import { ConfigSchema } from '../constants';
@@ -51,7 +53,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       ready: false,
-      authenticated: {}
+      authenticated: false
     };
     this.fb = null;
   }
@@ -106,7 +108,23 @@ class App extends React.Component {
           id="echo-content" 
           style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
           <Base>
-            {this.state.ready ? <Root fb={this.fb} user={this.state.authenticated} updateAuthState={this.updateAuthState.bind(this)} /> : <Loading />}
+            {
+              this.state.ready ?
+                <React.Fragment>
+                  <header>
+                    <Toolbar />
+                  </header>
+                  <main>
+                    <TextEditor 
+                      fb={this.fb} 
+                      user={this.state.authenticated} 
+                      updateAuthState={this.updateAuthState.bind(this)} />
+                    <CommentList fb={this.fb} />
+                  </main>
+                  <footer>
+                  </footer>
+                </React.Fragment> : <Loading />
+            }
           </Base>
         </ResizableFrame>
         <ToastContainer />

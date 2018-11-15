@@ -10,7 +10,8 @@ const Button = (props) => (
       padding: 15px;
       border: none;
       border-radius: 3px;
-      background-color: transparent;
+      background-color: #f6f2f1;
+      cursor: pointer;
     }
   `}
    <div className='button-container'>
