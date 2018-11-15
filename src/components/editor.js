@@ -6,7 +6,8 @@ import Loading from './loading';
 import Button from './button';
 
 import { importStorage } from '../firebase';
-// const Preview = React.lazy(() => import('react-markdown'));
+
+const Preview = React.lazy(() => import('react-markdown'));
 const Avatar = React.lazy(() => import('./avatar'));
 
 const Editor = (props) => (
@@ -30,6 +31,7 @@ const Editor = (props) => (
         value={props.post}
         onChange={props.onChange}
       />
+      { this.props.user ? <div className='editor-toolbar'></div> : null }
     </div>
   </Style>
 )
@@ -103,6 +105,7 @@ class TextEditor extends React.Component {
     if (this.props.user) {
       importStorage().then(() => {
         this.storage = this.props.fb.storage();
+        console.log(this.storage);
       })
     }
   }
@@ -118,14 +121,18 @@ class TextEditor extends React.Component {
               </React.Suspense>
             </LevelItem>
             <LevelItem flex='5 auto'>
-              <Editor post={this.state.post} onChange={this.handleInput.bind(this)} />
+              { this.state.preview ? 
+                <React.Suspense fallback={Loading}>
+                  <Preview source={this.state.post} />
+                </React.Suspense> : <Editor post={this.state.post} onChange={this.handleInput.bind(this)} />
+              }
             </LevelItem>
           </Level> : <Editor post={this.state.post} onChange={this.handleInput.bind(this)} /> 
         }
         <ActionBar>
           { this.props.user ? 
               <Button 
-                onClick={this.state.preview ? this.previewPost.bind(this) : this.submitPost.bind(this) } 
+                onClick={this.state.ready ? this.submitPost.bind(this) : this.previewPost.bind(this) } 
                 value={this.state.preview ? `Post as ${this.props.user.name}` : 'Preview'} 
               /> : null 
           }
