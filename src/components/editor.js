@@ -7,6 +7,7 @@ import Loading from './loading';
 import Button from './button';
 
 import { importStorage } from '../firebase';
+import { Attachments } from '../constants';
 
 const Preview = React.lazy(() => import('react-markdown'));
 const Avatar = React.lazy(() => import('./avatar'));
@@ -41,7 +42,7 @@ const Editor = (props) => (
     <div className='editor'>
       <textarea 
         name='post' 
-        rows={2}
+        rows={4}
         placeholder='Add to the discussion...'
         value={props.post}
         onChange={props.onChange}
@@ -49,7 +50,8 @@ const Editor = (props) => (
       { props.user ? 
         <div className='editor-toolbar'>
           <Files 
-            accepts={['image/png']}
+            accepts={['image/*']}
+            onError={(err) => console.error(err)}
             onChange={props.handleAssetInput}>
             <button className='btn'>
               <i className='icon ion-md-images'></i>
@@ -118,11 +120,18 @@ class TextEditor extends React.Component {
 
   handleAssetInput (files) {
     const storageRef = this.storage.ref();
-    storageRef.put(files[0])
-    .then((snapshot) => {
-      console.log(snapshot);
-    })
-    .catch((err) => {
+    const file = files[0];
+    const uploadTask = storageRef.child(`${Attachments}/${file.name}`).put(file, {
+      contentType: file.type
+    });
+    uploadTask.then((snapshot) => {
+      snapshot.ref.getDownloadURL().then((downloadURL) => {
+        this.setState({ 
+          post: this.state.post.concat(`\n![user attachment](${downloadURL})\n`)
+        })
+      });
+    });
+    uploadTask.catch((err) => {
       console.error(err);
     });
   }
@@ -132,7 +141,7 @@ class TextEditor extends React.Component {
   }
 
   submitPost () {
-    console.log('submit post')
+    
   }
 
   componentWillMount () {
@@ -163,7 +172,7 @@ class TextEditor extends React.Component {
         <ActionBar>
           { this.props.user ? 
               <Button 
-                onClick={this.state.preview ? this.previewPost.bind(this) : this.submitPost.bind(this) } 
+                onClick={!this.state.preview ? this.previewPost.bind(this) : this.submitPost.bind(this) } 
                 value={this.state.preview ? `Post as ${this.props.user.name}` : 'Preview'} 
               /> : null 
           }

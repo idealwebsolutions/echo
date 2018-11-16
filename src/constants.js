@@ -1,31 +1,3 @@
+export const RootElement = 'echo_thread';
 export const FirebaseUIContainer = 'firebaseui_container';
-export const ConfigSchema = {
-  required: true,
-  type: 'object',
-  properties: {
-    apiKey: {
-      required: true,
-      type: 'string',
-    },
-    authDomain: {
-      required: true,
-      type: 'string'
-    },
-    databaseURL: {
-      required: true,
-      type: 'string'
-    },
-    projectId: {
-      required: true,
-      type: 'string'
-    },
-    storageBucket: {
-      required: true,
-      type: 'string'
-    },
-    messagingSenderId: {
-      required: true,
-      type: 'string'
-    }
-  }
-};
+export const Attachments = 'attachments';

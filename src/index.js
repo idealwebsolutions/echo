@@ -4,14 +4,18 @@ import { render } from 'react-dom';
 
 import App from './components/app';
 
+import { RootElement } from './constants';
+
 ready(() => {
-  const rootElement = document.querySelector('#echo-thread');
+  const rootElement = document.querySelector(`#${RootElement}`);
   
   if (!rootElement) {
-    throw new Error('Root element (#echo-thread) was not found. Unable to display comments');
+    throw new Error(`Root element (#${RootElement}) was not found. Unable to display comments`);
   }
 
-  const configPath = rootElement.getAttribute('data-config-path');
-
-  render(<App configPath={configPath} />, rootElement);
+  render(
+    <App 
+      firebaseApiKey={rootElement.getAttribute('data-firebase-apikey') || ''}
+      firebaseProjectId={rootElement.getAttribute('data-firebase-projectid') || ''} />, rootElement
+  );
 });

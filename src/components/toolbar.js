@@ -34,9 +34,7 @@ const options = [
 ]
 
 export default (props) =>
-  <React.Fragment>
-    <Level>
-      <LevelItem flex={5}>0 comments</LevelItem>
-      <LevelItem></LevelItem>
-    </Level>
-  </React.Fragment>
+  <Level>
+    <LevelItem flex={5}>0 comments</LevelItem>
+    <LevelItem></LevelItem>
+  </Level>

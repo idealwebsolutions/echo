@@ -4,7 +4,7 @@ import Style from 'style-it';
 const Button = (props) => (
   <Style>
   {`
-    .button-container button {
+    .button button {
       width: 100%;
       font-size: 1.2rem;
       padding: 15px;
@@ -14,7 +14,7 @@ const Button = (props) => (
       cursor: pointer;
     }
   `}
-   <div className='button-container'>
+   <div className='button'>
     <button onClick={props.onClick}>{props.value}</button>
    </div>
   </Style>

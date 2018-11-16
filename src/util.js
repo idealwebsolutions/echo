@@ -1,8 +1,5 @@
-import validator from 'is-my-json-valid';
 // No-op
 export const Noop = () => {};
-// Validates a schema against a payload
-export const validateSchema = (schema, payload) => validator(schema)(payload);
 // Generates login configuration based on providers
 export const generateLoginConfig = (providers = []) => {
   if (!providers.length) {

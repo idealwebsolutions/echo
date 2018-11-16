@@ -1,5 +1,4 @@
 import React from 'react';
-import { get } from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import Style from 'style-it';
 
@@ -10,8 +9,6 @@ import CommentList from './comment';
 import ResizableFrame from './frame';
 
 import { importApp, importDatabase } from '../firebase';
-import { ConfigSchema } from '../constants';
-import { validateSchema } from '../util';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 
@@ -46,8 +43,6 @@ const Base = ({ children }) => (
   </Style>
 );
 
-const getConfiguration = (path) => get(`${path ? path : 'config.json'}`)
-
 class App extends React.Component {
   constructor (props) {
     super(props);
@@ -72,32 +67,34 @@ class App extends React.Component {
 
   componentDidMount () {
     this.setState({ ready: false });
-    getConfiguration(this.props.configPath)
-      .then((response) => {
-        const valid = validateSchema(ConfigSchema, response.data);
-        
-        if (!valid) {
-          return this.alertError('Invalid schema found: wrong configuration file');
-        }
+    
+    if (!this.props.firebaseApiKey.length) {
+      return this.alertError('Configuration failed: Invalid Firebase API key');
+    }
 
-        console.log(window.location.pathname);
-        
-        importApp().then((app) => {
-          importDatabase().then(() => {
-            this.fb = app.initializeApp(response.data);
-            
-            const db = this.fb.database();
+    if (!this.props.firebaseProjectId.length) {
+      return this.alertError('Configuration failed: Invalid Firebase Project Id');
+    }
 
-            db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
-            // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
-            this.setState({ ready: true });
-          });
+    console.log(window.location.pathname);
+    
+    importApp().then((app) => {
+      importDatabase().then(() => {
+        this.fb = app.initializeApp({
+          apiKey: this.props.firebaseApiKey,
+          authDomain: `${this.props.firebaseProjectId}.firebaseapp.com`,
+          databaseURL: `https://${this.props.firebaseProjectId}.firebaseio.com`,
+          projectId: this.props.firebaseProjectId,
+          storageBucket: `${this.props.firebaseProjectId}.appspot.com`
         });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.alertError('Unable to fetch firebase configuration');
+        
+        const db = this.fb.database();
+        
+        db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
+        // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
+        this.setState({ ready: true });
       });
+    });
   }
 
   render () {
@@ -117,11 +114,13 @@ class App extends React.Component {
                     <TextEditor 
                       fb={this.fb} 
                       user={this.state.user} 
+                      alertError={this.alertError}
                       updateAuthState={this.updateAuthState.bind(this)} />
-                    <CommentList fb={this.fb} />
+                    <CommentList 
+                      fb={this.fb} 
+                    />
                   </main>
-                  <footer>
-                  </footer>
+                  <footer></footer>
                 </React.Fragment> : <Loading />
             }
           </Base>
