@@ -53,16 +53,15 @@ class App extends React.Component {
     super(props);
     this.state = {
       ready: false,
-      authenticated: false
+      user: false
     };
     this.fb = null;
   }
 
   updateAuthState (user) {
     this.setState({
-      authenticated: !user || Object.keys(user).length === 0 ? false : user
+      user: !user || Object.keys(user).length === 0 ? false : user
     });
-    console.log(this.state.authenticated);
   }
 
   alertError (errorMessage) {
@@ -117,7 +116,7 @@ class App extends React.Component {
                   <main>
                     <TextEditor 
                       fb={this.fb} 
-                      user={this.state.authenticated} 
+                      user={this.state.user} 
                       updateAuthState={this.updateAuthState.bind(this)} />
                     <CommentList fb={this.fb} />
                   </main>

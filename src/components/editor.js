@@ -1,4 +1,5 @@
 import React from 'react';
+import Files from 'react-files';
 import Style from 'style-it';
 
 import LoginScreen from './login';
@@ -15,23 +16,47 @@ const Editor = (props) => (
     {`
       .editor textarea {
         resize: none;
-        margin: 8px 0;
+        margin: 1px 0;
         padding: 10px;
         width: 100%;
         max-width: 100%;
         border: 2px solid #adafbd;
         border-bottom: none;
       }
+
+      .editor .editor-toolbar {
+        margin-top: -15px;
+      }
+
+      .editor .editor-toolbar .btn {
+        border: none;
+        box-shadow: none;
+        background-color: transparent;
+      }
+
+      .editor .editor-toolbar .icon {
+        font-size: 1.7rem;
+      }
     `}
     <div className='editor'>
       <textarea 
         name='post' 
-        rows={4}
+        rows={2}
         placeholder='Add to the discussion...'
         value={props.post}
         onChange={props.onChange}
       />
-      { this.props.user ? <div className='editor-toolbar'></div> : null }
+      { props.user ? 
+        <div className='editor-toolbar'>
+          <Files 
+            accepts={['image/png']}
+            onChange={props.handleAssetInput}>
+            <button className='btn'>
+              <i className='icon ion-md-images'></i>
+            </button>
+          </Files>
+        </div> : null 
+      }
     </div>
   </Style>
 )
@@ -40,7 +65,6 @@ const ActionBar = ({ children }) => (
   <Style>
     {`
       .action-bar {
-        margin-top: -13px;
         min-height: 40px;
         width: 100%;
         max-width: 100%;
@@ -80,16 +104,26 @@ class TextEditor extends React.Component {
     
     this.state = {
       preview: false,
-      ready: false,
       post: ''
     };
     this.storage = null;
   }
 
-  handleInput (event) {
+  handleTextInput ({ target }) {
     this.setState({ 
-      post: event.target.value, 
-      preview: false 
+      post: target.value, 
+      preview: false
+    });
+  }
+
+  handleAssetInput (files) {
+    const storageRef = this.storage.ref();
+    storageRef.put(files[0])
+    .then((snapshot) => {
+      console.log(snapshot);
+    })
+    .catch((err) => {
+      console.error(err);
     });
   }
 
@@ -98,16 +132,13 @@ class TextEditor extends React.Component {
   }
 
   submitPost () {
-  
+    console.log('submit post')
   }
 
   componentWillMount () {
-    if (this.props.user) {
-      importStorage().then(() => {
-        this.storage = this.props.fb.storage();
-        console.log(this.storage);
-      })
-    }
+    importStorage().then(() => {
+      this.storage = this.props.fb.storage();
+    })
   }
 
   render () {
@@ -124,15 +155,15 @@ class TextEditor extends React.Component {
               { this.state.preview ? 
                 <React.Suspense fallback={Loading}>
                   <Preview source={this.state.post} />
-                </React.Suspense> : <Editor post={this.state.post} onChange={this.handleInput.bind(this)} />
+                </React.Suspense> : <Editor post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} />
               }
             </LevelItem>
-          </Level> : <Editor post={this.state.post} onChange={this.handleInput.bind(this)} /> 
+          </Level> : <Editor post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} /> 
         }
         <ActionBar>
           { this.props.user ? 
               <Button 
-                onClick={this.state.ready ? this.submitPost.bind(this) : this.previewPost.bind(this) } 
+                onClick={this.state.preview ? this.previewPost.bind(this) : this.submitPost.bind(this) } 
                 value={this.state.preview ? `Post as ${this.props.user.name}` : 'Preview'} 
               /> : null 
           }
