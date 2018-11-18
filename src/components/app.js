@@ -105,7 +105,7 @@ class App extends React.Component {
         <ResizableFrame 
           id="echo-content" 
           style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
-          <Base>
+            <Base>
             {
               this.state.ready ?
                 <React.Fragment>
@@ -125,8 +125,8 @@ class App extends React.Component {
                   <footer></footer>
                 </React.Fragment> : <Loading />
             }
-          </Base>
-        </ResizableFrame>
+            </Base>
+          </ResizableFrame>
         <ToastContainer />
       </React.Fragment>
     );

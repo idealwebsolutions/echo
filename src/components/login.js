@@ -1,7 +1,8 @@
 import React from 'react';
+import Button from '@material-ui/core/Button';
 import { auth } from 'firebase/app';
 
-import Button from './button';
+//import Button from './button';
 import { importAuth } from '../firebase';
 import { FirebaseUIContainer } from '../constants';
 import { generateLoginConfig, Noop } from '../util';
@@ -63,7 +64,7 @@ class LoginScreen extends React.Component {
   render () {
     if (this.state.signedIn) {
       return (
-        <Button onClick={() => this.props.fb.auth().signOut()} value='Sign out' />
+        <Button onClick={() => this.props.fb.auth().signOut()}>Sign out</Button>
       )
     }
     // TODO: requires firebase ui container to exist in both instances 
