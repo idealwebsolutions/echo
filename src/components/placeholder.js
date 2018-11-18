@@ -1,4 +1,5 @@
 import React from 'react';
+import Icon from '@material-ui/core/Icon';
 import Style from 'style-it';
 
 const Placeholder = (props) => (
@@ -20,7 +21,7 @@ const Placeholder = (props) => (
       }
     `}
     <div className="placeholder">
-      <i className={`icon ${props.icon}`}></i>
+      <Icon className="icon">{props.icon}</Icon>
       <h3 className="title">{props.title}</h3>
     </div>
   </Style>

@@ -58,9 +58,10 @@ class ResizableFrame extends React.Component {
   }
   
   render () {
+    const { children } = this.props;
     return (
       <Frame ref='frame' id={this.props.id} style={this.props.style} onLoad={this.injectContentWindow.bind(this)}>
-        {this.props.children}
+        {this.state.ready ? this.props.children : null}
       </Frame>
     )
   }

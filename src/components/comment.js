@@ -92,7 +92,7 @@ class CommentList extends React.Component {
 
   render () {
     if (!this.state.comments.length) {
-      return <Placeholder title="No comments found" icon="ion-md-text" />
+      return <Placeholder title="No comments found" icon="comment" />
     }
 
     const comments = this.state.comments.map((comment) => (

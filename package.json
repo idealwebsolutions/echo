@@ -13,6 +13,7 @@
   "author": "idealwebsolutions",
   "license": "",
   "dependencies": {
+    "@material-ui/core": "^3.5.1",
     "document-ready": "^2.0.1",
     "emoji-dictionary": "^1.0.9",
     "firebase": "^5.5.6",

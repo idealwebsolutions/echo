@@ -1,5 +1,6 @@
 import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Style from 'style-it';
 
 import Loading from './loading';
@@ -16,8 +17,8 @@ import 'react-toastify/dist/ReactToastify.min.css';
 const Base = ({ children }) => (
   <Style>
     {`
-      @import url('https://fonts.googleapis.com/css?family=Pontano+Sans');
-      @import url('https://unpkg.com/ionicons@4.4.6/dist/css/ionicons.min.css');
+      @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
+      @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
       @import url('https://cdn.firebase.com/libs/firebaseui/3.4.1/firebaseui.css');
 
       * {
@@ -30,7 +31,7 @@ const Base = ({ children }) => (
       }
 
       .base {
-        font-family: 'Pontano Sans', sans-serif;
+        font-family: 'Roboto', sans-serif;
       }
       
       .base > div {
@@ -100,6 +101,7 @@ class App extends React.Component {
   render () {
     return (
       <React.Fragment>
+        <CssBaseline />
         <ResizableFrame 
           id="echo-content" 
           style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>

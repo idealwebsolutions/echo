@@ -1,5 +1,7 @@
 import React from 'react';
 import Files from 'react-files';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
 import Style from 'style-it';
 
 import LoginScreen from './login';
@@ -12,16 +14,13 @@ import { Attachments } from '../constants';
 const Preview = React.lazy(() => import('react-markdown'));
 const Avatar = React.lazy(() => import('./avatar'));
 
-const Editor = (props) => (
+const EditorContainer = (props) => (
   <Style>
     {`
       .editor textarea {
-        resize: none;
-        margin: 1px 0;
-        padding: 10px;
         width: 100%;
         max-width: 100%;
-        border: 2px solid #adafbd;
+        padding: 10px;
         border-bottom: none;
       }
 
@@ -39,16 +38,21 @@ const Editor = (props) => (
         font-size: 1.7rem;
       }
     `}
-    <div className='editor'>
-      <textarea 
-        name='post' 
-        rows={4}
-        placeholder='Add to the discussion...'
+    <form className="editor" noValidate autoComplete="off">
+      <TextField 
+        multiline
+        label="test"
+        name="post"
+        rowsMax="4"
+        helperText="Add to the discussion..."
+        variant="outlined"
+        margin="normal"
         value={props.post}
         onChange={props.onChange}
+        disabled={!!props.user}
       />
       { props.user ? 
-        <div className='editor-toolbar'>
+        <div className="editor-toolbar">
           <Files 
             accepts={['image/*']}
             onError={(err) => console.error(err)}
@@ -59,9 +63,11 @@ const Editor = (props) => (
           </Files>
         </div> : null 
       }
-    </div>
+    </form>
   </Style>
 )
+
+const Editor = withStyles({})(EditorContainer)
 
 const ActionBar = ({ children }) => (
   <Style>
@@ -102,8 +108,7 @@ const LevelItem = (props) => (
 
 class TextEditor extends React.Component {
   constructor (props) {
-    super(props);
-    
+    super(props); 
     this.state = {
       preview: false,
       post: ''
