@@ -1,7 +1,8 @@
 import React from 'react';
 import Files from 'react-files';
-import TextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/core/styles';
+//import TextField from '@material-ui/core/TextField';
+//import { withStyles } from '@material-ui/core/styles';
+import { auth } from 'firebase/app';
 import Style from 'style-it';
 
 import LoginScreen from './login';
@@ -14,10 +15,11 @@ import { Attachments } from '../constants';
 const Preview = React.lazy(() => import('react-markdown'));
 const Avatar = React.lazy(() => import('./avatar'));
 
-const EditorContainer = (props) => (
+const Editor = (props) => (
   <Style>
     {`
       .editor textarea {
+        resize: none;
         width: 100%;
         max-width: 100%;
         padding: 10px;
@@ -39,17 +41,16 @@ const EditorContainer = (props) => (
       }
     `}
     <form className="editor" noValidate autoComplete="off">
-      <TextField 
-        multiline
+      <textarea 
         label="test"
         name="post"
-        rowsMax="4"
-        helperText="Add to the discussion..."
+        rows={4}
+        placeholder="Add to the discussion..."
         variant="outlined"
         margin="normal"
         value={props.post}
         onChange={props.onChange}
-        disabled={!!props.user}
+        disabled={!props.user}
       />
       { props.user ? 
         <div className="editor-toolbar">
@@ -66,8 +67,6 @@ const EditorContainer = (props) => (
     </form>
   </Style>
 )
-
-const Editor = withStyles({})(EditorContainer)
 
 const ActionBar = ({ children }) => (
   <Style>
@@ -150,14 +149,24 @@ class TextEditor extends React.Component {
       return;
     }
 
-    const newThread = this.fb.database().ref('/threads').push();
+    const users = this.props.fb.database().ref(`/users/${this.props.user.uid}`);
+    users.set({
+      name: this.props.user.name,
+      avatar: this.props.user.avatar
+    })
+    .then(() => console.log('created new user'))
+    .catch((err) => console.error(err));
+
+    const newThread = this.props.fb.database().ref('/threads').push();
     newThread.set({
       uid: this.props.user.uid,
       created: Date.now(),
-      content: this.state.post
+      content: this.state.post,
+      upvotes: 0,
+      downvotes: 0
     })
-      .then(() => console.log('created new post'))
-      .catch((err) => console.error(err));
+    .then(() => console.log('created new post'))
+    .catch((err) => console.error(err));
   }
 
   componentWillMount () {
@@ -187,7 +196,7 @@ class TextEditor extends React.Component {
         }
         <ActionBar>
           { this.props.user ? 
-              <Button 
+              <Button
                 onClick={!this.state.preview ? this.previewPost.bind(this) : this.submitPost.bind(this) } 
                 value={this.state.preview ? `Post as ${this.props.user.name}` : 'Preview'} 
               /> : null 

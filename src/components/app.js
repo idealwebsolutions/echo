@@ -59,19 +59,6 @@ class App extends React.Component {
     this.setState({
       user: !user || Object.keys(user).length === 0 ? false : user
     });
-
-    /*if (user) {
-      const t = this.fb.database().ref('/threads').push();
-      t.set({
-        uid: user.uid,
-        created: Date.now(),
-        content: 'test post'
-      })
-        .then(() => console.log('created new post'))
-        .catch((err) => {
-          console.error(err)
-        });
-    }*/
   }
 
   alertError (errorMessage) {
