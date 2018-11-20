@@ -1,12 +1,10 @@
 import React from 'react';
-// import Loadable from 'inferno-loadable';
 import ReactMarkdown from 'react-markdown';
 import spacetime from 'spacetime';
 import Style from 'style-it';
 
 import Placeholder from './placeholder';
 import Avatar from './avatar';
-import { importStorage } from '../firebase';
 
 /*
 Comment {
@@ -82,32 +80,23 @@ const Comment = (props) => (
   </Style>
 )
 
-class CommentList extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      comments: []
-    };
+const CommentList = (props) => {
+  if (!props.comments.length) {
+    return <Placeholder title="No comments found" icon="comment" />;
   }
 
-  render () {
-    if (!this.state.comments.length) {
-      return <Placeholder title="No comments found" icon="comment" />
-    }
+  const comments = props.comments.map((comment) => (
+    <Comment
+      id={comment.id}
+      user={comment.user}
+      date={comment.date}
+      upvotes={comment.upvotes}
+      downvotes={comment.downvotes}
+      content={comment.content}
+    />
+  ));
 
-    const comments = this.state.comments.map((comment) => (
-      <Comment
-        id={comment.id}
-        user={comment.user}
-        date={comment.date}
-        upvotes={comment.upvotes}
-        downvotes={comment.downvotes}
-        content={comment.content}
-      />
-    ));
-
-    return (<ul className="comments">{comments}</ul>)
-  }
+  return (<ul className="comments">{comments}</ul>);
 }
 
 export default CommentList;

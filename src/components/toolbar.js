@@ -35,6 +35,6 @@ const options = [
 
 export default (props) =>
   <Level>
-    <LevelItem flex={5}>0 comments</LevelItem>
+    <LevelItem flex={5}>{props.totalComments} comments</LevelItem>
     <LevelItem></LevelItem>
   </Level>

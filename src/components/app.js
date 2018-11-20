@@ -49,7 +49,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       ready: false,
-      user: false
+      user: false,
+      comments: []
     };
     this.fb = null;
   }
@@ -58,6 +59,19 @@ class App extends React.Component {
     this.setState({
       user: !user || Object.keys(user).length === 0 ? false : user
     });
+
+    /*if (user) {
+      const t = this.fb.database().ref('/threads').push();
+      t.set({
+        uid: user.uid,
+        created: Date.now(),
+        content: 'test post'
+      })
+        .then(() => console.log('created new post'))
+        .catch((err) => {
+          console.error(err)
+        });
+    }*/
   }
 
   alertError (errorMessage) {
@@ -93,6 +107,7 @@ class App extends React.Component {
         
         db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
         // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
+        //const t = db.ref('/threads/demo').push()
         this.setState({ ready: true });
       });
     });
@@ -110,7 +125,7 @@ class App extends React.Component {
               this.state.ready ?
                 <React.Fragment>
                   <header>
-                    <Toolbar />
+                    <Toolbar totalComments={this.state.comments.length} />
                   </header>
                   <main>
                     <TextEditor 
@@ -118,11 +133,10 @@ class App extends React.Component {
                       user={this.state.user} 
                       alertError={this.alertError}
                       updateAuthState={this.updateAuthState.bind(this)} />
-                    <CommentList 
-                      fb={this.fb} 
-                    />
                   </main>
-                  <footer></footer>
+                  <footer>
+                    <CommentList comments={this.state.comments} />
+                  </footer>
                 </React.Fragment> : <Loading />
             }
             </Base>

@@ -146,7 +146,18 @@ class TextEditor extends React.Component {
   }
 
   submitPost () {
-    
+    if (!this.props.user || !this.state.preview) {
+      return;
+    }
+
+    const newThread = this.fb.database().ref('/threads').push();
+    newThread.set({
+      uid: this.props.user.uid,
+      created: Date.now(),
+      content: this.state.post
+    })
+      .then(() => console.log('created new post'))
+      .catch((err) => console.error(err));
   }
 
   componentWillMount () {
