@@ -157,7 +157,7 @@ class TextEditor extends React.Component {
     .then(() => console.log('created new user'))
     .catch((err) => console.error(err));
 
-    const newThread = this.props.fb.database().ref('/threads').push();
+    const newThread = this.props.fb.database().ref('/forums/demo/threads').push();
     newThread.set({
       uid: this.props.user.uid,
       created: Date.now(),
