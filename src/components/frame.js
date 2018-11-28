@@ -123,8 +123,12 @@ class ResizableFrame extends React.Component {
         style={this.props.style} 
         onLoad={this.injectContentWindow.bind(this)}
       >
-        <div id="inner-frame-content"></div>
-        { inIframe }
+        <FrameContextConsumer>
+          {(frameContext) => (
+            <div id="inner-frame-content"></div>
+            { inIframe }
+          )}
+        </FrameContextConsumer>
       </Frame>
     )
   }

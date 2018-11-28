@@ -14,4 +14,8 @@ function importAuth () {
   return import(/* chunkname: 'firebase-auth' */ 'firebase/auth');
 }
 
+function importMessaging () {
+  return import(/* chunkname: 'firebase-messaging' */ 'firebase/messaging');
+}
+
 export { importApp, importAuth, importDatabase, importStorage };
