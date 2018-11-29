@@ -7,7 +7,7 @@ import Style from 'style-it';
 
 import LoginScreen from './login';
 import Loading from './loading';
-import Button from './button';
+import ActionButton from './button';
 
 import { importStorage } from '../firebase';
 import { Attachments } from '../constants';
@@ -67,18 +67,18 @@ const Editor = (props) => (
   </Style>
 )
 
-const ActionBar = ({ children }) => (
+const ActionBar = (props) => (
   <Style>
     {`
       .action-bar {
         min-height: 40px;
         width: 100%;
         max-width: 100%;
-        background-color: #adafbd;
-        border: 2px solid #adafbd;
+        background-color: transparent;
+        /*border: 2px solid #adafbd;*/
       }
     `}
-    <div className='action-bar'>{children}</div>
+    <div className='action-bar'>{props.children}</div>
   </Style>
 )
 
@@ -195,10 +195,10 @@ class TextEditor extends React.Component {
         }
         <ActionBar>
           { this.props.user ? 
-              <Button
+              <ActionButton
                 onClick={!this.state.preview ? this.previewPost.bind(this) : this.submitPost.bind(this) } 
-                value={this.state.preview ? `Post as ${this.props.user.name}` : 'Preview'} 
-              /> : null 
+                color='primary'
+                value={this.state.preview ? `Post as ${this.props.user.name}` : 'Preview'} /> : null 
           }
               <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />
         </ActionBar>

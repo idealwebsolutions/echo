@@ -9,7 +9,7 @@ import TextEditor from './editor';
 import CommentList from './comment';
 import ResizableFrame from './frame';
 
-import { importApp, importDatabase, importAuth } from '../firebase';
+import { importApp, importDatabase } from '../firebase';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 
@@ -82,24 +82,21 @@ class App extends React.Component {
     
     importApp().then((app) => {
       importDatabase().then(() => {
-        importAuth().then(() => {
-          this.fb = app.initializeApp({
-            apiKey: this.props.firebaseApiKey,
-            authDomain: `${this.props.firebaseProjectId}.firebaseapp.com`,
-            databaseURL: `https://${this.props.firebaseProjectId}.firebaseio.com`,
-            projectId: this.props.firebaseProjectId,
-            storageBucket: `${this.props.firebaseProjectId}.appspot.com`,
-            messagingSenderId: this.props.firebaseMessagingSenderId
-          });
+        this.fb = app.initializeApp({
+          apiKey: this.props.firebaseApiKey,
+          authDomain: `${this.props.firebaseProjectId}.firebaseapp.com`,
+          databaseURL: `https://${this.props.firebaseProjectId}.firebaseio.com`,
+          projectId: this.props.firebaseProjectId,
+          storageBucket: `${this.props.firebaseProjectId}.appspot.com`,
+          messagingSenderId: this.props.firebaseMessagingSenderId
+        });
         
-          const db = this.fb.database();
-          //console.log(this.fb.auth()); 
+        const db = this.fb.database();
 
-          db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
-          // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
-          //const t = db.ref('/threads/demo').push()
-          this.setState({ ready: true });
-        }).catch((err) => console.error(err));
+        db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
+        // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
+        //const t = db.ref('/threads/demo').push()
+        this.setState({ ready: true });
       }).catch((err) => console.error(err));
     }).catch((err) => console.error(err));
   }

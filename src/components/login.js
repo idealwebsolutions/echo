@@ -1,10 +1,11 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import { auth } from 'firebase/app';
 
-// import { importAuth } from '../firebase';
+import { importAuth } from '../firebase';
 import { FirebaseUIContainer } from '../constants';
 import { generateLoginConfig, Noop } from '../util';
+
+import ActionButton from './button';
 
 class LoginScreen extends React.Component {
   constructor (props) {
@@ -18,9 +19,7 @@ class LoginScreen extends React.Component {
 
   componentDidMount () {
     const firebaseui = require('firebaseui');
-    //
-      console.log('auth import')
-      console.log(this.props.fb);
+    importAuth().then(() => {
       this.uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.props.fb.auth());
       this.uiWidget.reset();
       this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
@@ -43,12 +42,12 @@ class LoginScreen extends React.Component {
         }) : user);
       });
       
-      console.log('called');  
       // this.props.fb.auth().disableAutoSignIn();
       this.renderWidget(generateLoginConfig([
         auth.GoogleAuthProvider.PROVIDER_ID,
         auth.EmailAuthProvider.PROVIDER_ID
       ]));
+    }).catch((err) => console.error(err));
   }
 
   componentWillUnmount () {
@@ -65,7 +64,7 @@ class LoginScreen extends React.Component {
   render () {
     if (this.state.signedIn) {
       return (
-        <Button onClick={() => this.props.fb.auth().signOut()}>Sign out</Button>
+        <ActionButton color='secondary' onClick={() => this.props.fb.auth().signOut()} value='Sign out' />
       )
     }
     // TODO: requires firebase ui container to exist in both instances 

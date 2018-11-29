@@ -1,23 +1,18 @@
 import React from 'react';
+import Button from '@material-ui/core/Button';
 import Style from 'style-it';
 
-const Button = (props) => (
+const ActionButton = (props) => (
   <Style>
   {`
     .button button {
       width: 100%;
-      font-size: 1.2rem;
-      padding: 15px;
-      border: none;
-      border-radius: 3px;
-      background-color: #f6f2f1;
-      cursor: pointer;
     }
   `}
    <div className='button'>
-    <button id={props.id} onClick={props.onClick}>{props.value}</button>
+    <Button id={props.id} color={props.color} onClick={props.onClick}>{props.value}</Button>
    </div>
   </Style>
 )
 
-export default Button;
+export default ActionButton;

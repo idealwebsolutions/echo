@@ -1,9 +1,8 @@
-import { createHash } from 'crypto';
 import React from 'react';
 import Image from 'react-image-resizer';
+// import Avatar from '@material-ui/core/Avatar';
 import Style from 'style-it';
 import uuidv4 from 'uuid/v4';
-import hashicon from 'hashicon';
 
 const GenericAvatar = (props) => (
   <Style>
@@ -27,16 +26,6 @@ class Avatar extends React.Component {
   }
 
   componentDidMount () {
-    if (!this.props.user.avatar) {
-      this.generateTempIcon(this.props.user);
-    }
-  }
-
-  generateTempIcon (user) {
-    const hash = createHash('sha1').update(user.name).toString('hex');
-    const icon = hashicon(hash, 64);
-    const frame = document.querySelector('#echo-content');
-    frame.contentDocument.body.querySelector(`[id='${this.state.uid}']`).appendChild(icon);
   }
 
   render () {

@@ -7,7 +7,7 @@ const Placeholder = (props) => (
     {`
       .placeholder {
         text-align: center;      
-        padding: 10px;
+        padding: 20px 10px;
       }
 
       .placeholder > .icon {
