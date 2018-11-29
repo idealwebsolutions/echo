@@ -1,4 +1,6 @@
 import React from 'react';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import Style from 'style-it';
 
 const Level = ({ children }) => (
@@ -35,6 +37,12 @@ const options = [
 
 export default (props) =>
   <Level>
-    <LevelItem flex={5}>{props.totalComments} comments</LevelItem>
-    <LevelItem></LevelItem>
+    <LevelItem flex={6}>
+      <span>{props.totalComments} comments</span>
+    </LevelItem>
+    <LevelItem flex={0}>
+      <Select value='new' inputProps={{ name: 'sort' }}>
+        <MenuItem value='new'>Newest</MenuItem>
+      </Select>
+    </LevelItem>
   </Level>

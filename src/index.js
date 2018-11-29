@@ -16,6 +16,8 @@ ready(() => {
   render(
     <App 
       firebaseApiKey={rootElement.getAttribute('data-firebase-apikey') || ''}
-      firebaseProjectId={rootElement.getAttribute('data-firebase-projectid') || ''} />, rootElement
+      firebaseProjectId={rootElement.getAttribute('data-firebase-projectid') || ''}
+      firebaseMessagingSenderId={rootElement.getAttribute('data-firebase-messagingsenderid') || ''} 
+    />, rootElement
   );
 });

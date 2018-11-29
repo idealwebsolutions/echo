@@ -1,7 +1,7 @@
 import React from 'react';
 import Files from 'react-files';
-//import TextField from '@material-ui/core/TextField';
-//import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
 import { auth } from 'firebase/app';
 import Style from 'style-it';
 
@@ -19,11 +19,9 @@ const Editor = (props) => (
   <Style>
     {`
       .editor textarea {
-        resize: none;
+        padding: 10px;
         width: 100%;
         max-width: 100%;
-        padding: 10px;
-        border-bottom: none;
       }
 
       .editor .editor-toolbar {
@@ -41,11 +39,12 @@ const Editor = (props) => (
       }
     `}
     <form className="editor" noValidate autoComplete="off">
-      <textarea 
-        label="test"
+      <TextField
+        label="Add to the discussion"
         name="post"
         rows={4}
-        placeholder="Add to the discussion..."
+        fullWidth
+        multiline
         variant="outlined"
         margin="normal"
         value={props.post}

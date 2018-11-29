@@ -2,8 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import { auth } from 'firebase/app';
 
-//import Button from './button';
-import { importAuth } from '../firebase';
+// import { importAuth } from '../firebase';
 import { FirebaseUIContainer } from '../constants';
 import { generateLoginConfig, Noop } from '../util';
 
@@ -20,7 +19,8 @@ class LoginScreen extends React.Component {
   componentDidMount () {
     const firebaseui = require('firebaseui');
     //
-    importAuth().then(() => {
+      console.log('auth import')
+      console.log(this.props.fb);
       this.uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.props.fb.auth());
       this.uiWidget.reset();
       this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
@@ -43,12 +43,12 @@ class LoginScreen extends React.Component {
         }) : user);
       });
       
+      console.log('called');  
       // this.props.fb.auth().disableAutoSignIn();
       this.renderWidget(generateLoginConfig([
         auth.GoogleAuthProvider.PROVIDER_ID,
         auth.EmailAuthProvider.PROVIDER_ID
       ]));
-    });
   }
 
   componentWillUnmount () {
@@ -57,6 +57,7 @@ class LoginScreen extends React.Component {
 
   renderWidget (loginConfig) {
     const targetFrame = document.querySelector('#echo-content');
+    console.log(targetFrame)
     const container = targetFrame.contentDocument.body.querySelector(`#${FirebaseUIContainer}`);
     this.uiWidget.start(container, loginConfig);
   }

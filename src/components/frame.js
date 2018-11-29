@@ -7,14 +7,14 @@ import {
   createGenerateClassName,
   createMuiTheme
 } from '@material-ui/core/styles';
-import { StylesProvider } from '@material-ui/styles';
+import JssProvider from 'react-jss/lib/JssProvider';
 import blue from '@material-ui/core/colors/blue';
 import Frame, { FrameContextConsumer } from 'react-frame-component';
 import { iframeResizer } from 'iframe-resizer';
 
 const styles = (theme) => ({
   root: {
-    backgroundColor: theme.palette.background.default,
+    // backgroundColor: theme.palette.background.default,
     flexGrow: 1,
     height: 400,
     border: 'none',
@@ -83,12 +83,6 @@ class ResizableFrame extends React.Component {
     resizerScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.8/iframeResizer.contentWindow.min.js';
     body.appendChild(resizerScript);
     
-    this.state.jss = create({
-      plugins: [...jssPreset().plugins],
-      virtual: true,
-      insertionPoint: doc.querySelector('#inner-frame-content')
-    });
-    this.state.container = doc.body;
     this.setState({ ready: true });
   }
   
@@ -103,31 +97,29 @@ class ResizableFrame extends React.Component {
         useNextVariants: true
       }
     });
-
-    const inIframe = this.state.ready ? (
-      <StylesProvider jss={this.state.jss} generateClassName={generateClassName}>
-        <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
-          {
-            React.cloneElement(children, {
-              container: this.state.container
-            })
-          }
-        </MuiThemeProvider>
-      </StylesProvider>
-    ) : null;
-
+    
     return (
       <Frame 
         id={this.props.id}
         ref={this.handleRef.bind(this)}
-        style={this.props.style} 
+        style={this.props.style}
         onLoad={this.injectContentWindow.bind(this)}
       >
         <FrameContextConsumer>
-          {(frameContext) => (
-            <div id="inner-frame-content"></div>
-            { inIframe }
-          )}
+          { ({ document }) => {
+            const jss = create({
+              ...jssPreset(),
+              insertionPoint: document.body
+            })
+
+            return (
+              <JssProvider jss={jss} generateClassName={generateClassName}>
+                <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
+                  { children }
+                </MuiThemeProvider>
+              </JssProvider>
+            )
+          }}
         </FrameContextConsumer>
       </Frame>
     )
