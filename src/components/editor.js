@@ -13,7 +13,7 @@ import { importStorage } from '../firebase';
 import { Attachments } from '../constants';
 
 const Preview = React.lazy(() => import('react-markdown'));
-const Avatar = React.lazy(() => import('./avatar'));
+const ImageAvatar = React.lazy(() => import('./avatar'));
 
 const Editor = (props) => (
   <Style>
@@ -181,7 +181,7 @@ class TextEditor extends React.Component {
           <Level>
             <LevelItem flex={1}>
               <React.Suspense fallback={Loading}>
-                <Avatar user={this.props.user} />
+                <ImageAvatar user={this.props.user} />
               </React.Suspense>
             </LevelItem>
             <LevelItem flex='5 auto'>

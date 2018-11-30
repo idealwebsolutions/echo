@@ -1,4 +1,5 @@
 import React from 'react';
+import ShowMoreText from 'react-show-more-text';
 import ReactMarkdown from 'react-markdown';
 import spacetime from 'spacetime';
 import Style from 'style-it';

@@ -1,37 +1,37 @@
 import React from 'react';
-import Image from 'react-image-resizer';
-// import Avatar from '@material-ui/core/Avatar';
+import Avatar from '@material-ui/core/Avatar';
+import deepOrange from '@material-ui/core/colors/deepOrange';
 import Style from 'style-it';
-import uuidv4 from 'uuid/v4';
 
-const GenericAvatar = (props) => (
+const ImageAvatar = (props) => (
   <Style>
     {`
       .avatar {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        width: 64px;
+        height: 64px;
       }
     `}
-    <div id={props.id} className="avatar"></div>
+    <Avatar alt={props.user.name} src={props.user.avatar} className="avatar" height={64} width={64} />
   </Style>
 );
 
-class Avatar extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      uid: uuidv4() 
-    };
-  }
-
-  componentDidMount () {
-  }
-
-  render () {
-    return this.props.user.avatar ? 
-      <Image src={this.props.user.avatar} height={64} width={64}/> : <GenericAvatar id={this.state.uid} />;
-  }
+const IconAvatar = (props) => {
+  <Style>
+    {`
+      .avatar {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        backgroundColor: ${deepOrange[500]};
+      }
+    `}
+    <Avatar alt={props.user.name} className="avatar">${props.user.name[0].toUpperCase()}</Avatar>
+  </Style>
 }
 
-export default Avatar;
+export default ImageAvatar;
