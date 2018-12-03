@@ -1,48 +1,22 @@
 import React from 'react';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Style from 'style-it';
-
-const Level = ({ children }) => (
-  <Style>
-    {` 
-      .level { 
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        padding: 1px;
-        margin-bottom: 5px;
-      } 
-    `}
-    <nav className="level">{children}</nav>
-  </Style>
-)
-
-const LevelItem = (props) => (
-  <Style>
-    {`
-      .level-item {
-        flex: ${props.flex};
-      }
-    `}
-    <div className="level-item">{props.children}</div>
-  </Style>
-)
-
-const options = [
-  { value: 'new', label: 'Sort by Newest' },
-  { value: 'old', label: 'Sort by Oldest' },
-  { value: 'best', label: 'Sort by Best' }
-]
 
 export default (props) =>
-  <Level>
-    <LevelItem flex={6}>
-      <span>{props.totalComments} comments</span>
-    </LevelItem>
-    <LevelItem flex={0}>
-      <Select value='new' inputProps={{ name: 'sort' }}>
-        <MenuItem value='new'>Newest</MenuItem>
-      </Select>
-    </LevelItem>
-  </Level>
+  <nav>
+    <Grid container direction="row" justify="space-between" alignItems="baseline">
+      <Grid item xs={5}>
+        <span>{props.totalComments} comments</span>
+      </Grid>
+      <Grid item xs={1}>
+        <FormControl>
+          <Select value='new' inputProps={{ name: 'sort' }}>
+            <MenuItem value='new'>Newest</MenuItem>
+            <MenuItem value='best'>Best</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+    </Grid>
+  </nav>

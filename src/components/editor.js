@@ -1,6 +1,8 @@
 import React from 'react';
 import Files from 'react-files';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import { auth } from 'firebase/app';
 import Style from 'style-it';
@@ -25,13 +27,7 @@ const Editor = (props) => (
       }
 
       .editor .editor-toolbar {
-        margin-top: -15px;
-      }
-
-      .editor .editor-toolbar .btn {
-        border: none;
-        box-shadow: none;
-        background-color: transparent;
+        margin-top: 15px;
       }
 
       .editor .editor-toolbar .icon {
@@ -57,9 +53,9 @@ const Editor = (props) => (
             accepts={['image/*']}
             onError={(err) => console.error(err)}
             onChange={props.handleAssetInput}>
-            <button className='btn'>
-              <i className='icon ion-md-images'></i>
-            </button>
+            <Button>
+              Upload
+            </Button>
           </Files>
         </div> : null 
       }
@@ -148,21 +144,10 @@ class TextEditor extends React.Component {
       return;
     }
 
-    const users = this.props.fb.database().ref(`/users/${this.props.user.uid}`);
-    users.set({
-      name: this.props.user.name,
-      avatar: this.props.user.avatar
-    })
-    .then(() => console.log('created new user'))
-    .catch((err) => console.error(err));
-
     const newThread = this.props.fb.database().ref('/forums/demo/threads').push();
     newThread.set({
       uid: this.props.user.uid,
-      created: Date.now(),
-      content: this.state.post,
-      upvotes: 0,
-      downvotes: 0
+      content: this.state.post
     })
     .then(() => console.log('created new post'))
     .catch((err) => console.error(err));
@@ -187,7 +172,7 @@ class TextEditor extends React.Component {
             <LevelItem flex='5 auto'>
               { this.state.preview ? 
                 <React.Suspense fallback={Loading}>
-                  <Preview source={this.state.post} />
+                  <Preview disallowedTypes={['link', 'linkReference']} source={this.state.post} />
                 </React.Suspense> : <Editor post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} />
               }
             </LevelItem>

@@ -70,7 +70,11 @@ const Comment = (props) => (
           <span className="comment-author">{props.user.name}</span>
           <span className="comment-date">{spacetime(props.date).fromNow().qualified}</span>
         </header>
-        <ReactMarkdown className="comment-body" source={props.content} />
+        <ReactMarkdown 
+          className="comment-body" 
+          source={props.content}
+          skipHtml={true}
+        />
         <footer className="comment-footer">
           <i className="icon ion-ios-arrow-up"></i>
           <i className="icon ion-ios-arrow-down"></i>
