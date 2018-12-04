@@ -1,37 +1,28 @@
 import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
+import { withStyles } from '@material-ui/core/styles';
 import deepOrange from '@material-ui/core/colors/deepOrange';
-import Style from 'style-it';
+
+const styles = {
+  avatar: {
+    width: 64,
+    height: 64
+  },
+  textAvatar: {
+    backgroundColor: deepOrange[500]
+  }
+};
+
+/* display: flex, 
+  * flex-direction: column, 
+  * justify-content: center */
 
 const ImageAvatar = (props) => (
-  <Style>
-    {`
-      .avatar {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        width: 64px;
-        height: 64px;
-      }
-    `}
-    <Avatar alt={props.user.name} src={props.user.avatar} className="avatar" height={64} width={64} />
-  </Style>
+  <Avatar alt={props.user.name} src={props.user.avatar} className={props.classes.avatar} />
 );
 
-const IconAvatar = (props) => {
-  <Style>
-    {`
-      .avatar {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        width: 64px;
-        height: 64px;
-        backgroundColor: ${deepOrange[500]};
-      }
-    `}
-    <Avatar alt={props.user.name} className="avatar">${props.user.name[0].toUpperCase()}</Avatar>
-  </Style>
-}
+const IconAvatar = (props) => (
+  <Avatar alt={props.user.name} className={props.classes.avatar.concat(props.classes.textAvatar)}>${props.user.name[0].toUpperCase()}</Avatar>
+);
 
-export default ImageAvatar;
+export default withStyles(styles)(ImageAvatar);

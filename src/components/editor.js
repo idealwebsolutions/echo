@@ -3,13 +3,12 @@ import Files from 'react-files';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Hidden from '@material-ui/core/Hidden';
 import { withStyles } from '@material-ui/core/styles';
 import { auth } from 'firebase/app';
-import Style from 'style-it';
 
 import LoginScreen from './login';
 import Loading from './loading';
-import ActionButton from './button';
 
 import { importStorage } from '../firebase';
 import { Attachments } from '../constants';
@@ -17,88 +16,52 @@ import { Attachments } from '../constants';
 const Preview = React.lazy(() => import('react-markdown'));
 const ImageAvatar = React.lazy(() => import('./avatar'));
 
+const styles = {
+  editor: {
+    padding: 10,
+    width: '100%'
+  },
+  avatar: {
+    padding: '50px 25px !important'
+  },
+  actionBar: {
+    'min-height': 40
+  }
+};
+
 const Editor = (props) => (
-  <Style>
-    {`
-      .editor textarea {
-        padding: 10px;
-        width: 100%;
-        max-width: 100%;
-      }
-
-      .editor .editor-toolbar {
-        margin-top: 15px;
-      }
-
-      .editor .editor-toolbar .icon {
-        font-size: 1.7rem;
-      }
-    `}
-    <form className="editor" noValidate autoComplete="off">
-      <TextField
-        label="Add to the discussion"
-        name="post"
-        rows={4}
-        fullWidth
-        multiline
-        variant="outlined"
-        margin="normal"
-        value={props.post}
-        onChange={props.onChange}
-        disabled={!props.user}
-      />
-      { props.user ? 
-        <div className="editor-toolbar">
+  <form className={props.classes.editor} noValidate autoComplete="off">
+    <TextField
+      fullWidth
+      label="Add to the discussion"
+      name="post"
+      rows={4}
+      multiline
+      margin="normal"
+      variant="outlined"
+      value={props.post || ''}
+      onChange={props.onChange}
+      disabled={!props.user}
+    />
+    { props.user ? 
+      <Grid className={props.classes.editorToolbar} spacing={24} justify="space-between" container>
+        <Grid item>
           <Files 
             accepts={['image/*']}
             onError={(err) => console.error(err)}
             onChange={props.handleAssetInput}>
-            <Button>
+            <Button color="primary">
               Upload
             </Button>
           </Files>
-        </div> : null 
-      }
-    </form>
-  </Style>
-)
-
-const ActionBar = (props) => (
-  <Style>
-    {`
-      .action-bar {
-        min-height: 40px;
-        width: 100%;
-        max-width: 100%;
-        background-color: transparent;
-        /*border: 2px solid #adafbd;*/
-      }
-    `}
-    <div className='action-bar'>{props.children}</div>
-  </Style>
-)
-
-const Level = ({ children }) => (
-  <Style>
-    {`
-      .level {
-        display: flex;
-      }
-    `}
-    <div className='level'>{children}</div>
-  </Style>
-)
-
-const LevelItem = (props) => (
-  <Style>
-    {`
-      .level-item {
-        flex: ${props.flex};
-      }
-    `}
-    <div className='level-item'>{props.children}</div>
-  </Style>
-)
+        </Grid>
+        <Grid item>
+          <Button color="primary">Preview</Button>
+        </Grid>
+      </Grid> : null 
+    }
+  </form>
+);
 
 class TextEditor extends React.Component {
   constructor (props) {
@@ -163,33 +126,29 @@ class TextEditor extends React.Component {
     return (
       <React.Fragment>
         { this.props.user ? 
-          <Level>
-            <LevelItem flex={1}>
-              <React.Suspense fallback={Loading}>
-                <ImageAvatar user={this.props.user} />
-              </React.Suspense>
-            </LevelItem>
-            <LevelItem flex='5 auto'>
+          <Grid container spacing={24}>
+            <Hidden xsDown>
+              <Grid className={this.props.classes.avatar} item xs={2}>
+                <React.Suspense fallback={Loading}>
+                  <ImageAvatar user={this.props.user} />
+                </React.Suspense>
+              </Grid>
+            </Hidden>
+            <Grid item xs={12} sm={10}>
               { this.state.preview ? 
                 <React.Suspense fallback={Loading}>
                   <Preview disallowedTypes={['link', 'linkReference']} source={this.state.post} />
-                </React.Suspense> : <Editor post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} />
+                </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} />
               }
-            </LevelItem>
-          </Level> : <Editor post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} /> 
+            </Grid>
+          </Grid> : <Editor classes={this.props.classes} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} /> 
         }
-        <ActionBar>
-          { this.props.user ? 
-              <ActionButton
-                onClick={!this.state.preview ? this.previewPost.bind(this) : this.submitPost.bind(this) } 
-                color='primary'
-                value={this.state.preview ? `Post as ${this.props.user.name}` : 'Preview'} /> : null 
-          }
-              <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />
-        </ActionBar>
+        <div className={this.props.classes.actionBar}>
+          <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />
+        </div>
       </React.Fragment>
     );
   }
 }
 
-export default TextEditor;
+export default withStyles(styles)(TextEditor);

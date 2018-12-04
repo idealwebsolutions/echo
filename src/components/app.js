@@ -24,7 +24,7 @@ const Base = ({ children }) => (
       * {
         box-sizing: border-box;
       }
-
+      
       ul {
         list-style-type: none;
         padding: 0;
@@ -32,12 +32,6 @@ const Base = ({ children }) => (
 
       .base {
         font-family: 'Roboto', sans-serif;
-      }
-      
-      .base > div {
-        width: 60px;
-        margin-left: auto;
-        margin-right: auto;
       }
     `}
     <div className="base">{children}</div>

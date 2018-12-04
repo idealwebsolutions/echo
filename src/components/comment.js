@@ -1,8 +1,8 @@
 import React from 'react';
 import ShowMoreText from 'react-show-more-text';
 import ReactMarkdown from 'react-markdown';
+import { withStyles } from '@material-ui/core/styles';
 import spacetime from 'spacetime';
-import Style from 'style-it';
 
 import Placeholder from './placeholder';
 import Avatar from './avatar';
@@ -21,15 +21,14 @@ Comment {
 }
 */
 
-const Comment = (props) => (
-  <Style>
-    {`
-      .comment {
-        display: flex;
-        padding: 10px;
-      }
+const styles = {
+  comment: {
+    padding: 10
+  }
+};
 
-      .comment-avatar {
+const Comment = (props) => (
+      /*.comment-avatar {
         flex: 1;
       }
 
@@ -61,8 +60,7 @@ const Comment = (props) => (
       .comment-footer > .icon:not(:first-child):not(:last-child) {
         margin-left: 15px;
         margin-right: 15px;
-      }
-    `}
+      }*/
     <li key={props.id} className="comment">
       <Avatar className="comment-avatar" user={props.user} />
       <article className="comment-container">
@@ -82,7 +80,6 @@ const Comment = (props) => (
         </footer>
       </article>
     </li>
-  </Style>
 )
 
 const CommentList = (props) => {
@@ -93,6 +90,7 @@ const CommentList = (props) => {
   const comments = props.comments.map((comment) => (
     <Comment
       id={comment.id}
+      className={props.classes.comment}
       user={comment.user}
       date={comment.date}
       upvotes={comment.upvotes}
@@ -104,4 +102,4 @@ const CommentList = (props) => {
   return (<ul className="comments">{comments}</ul>);
 }
 
-export default CommentList;
+export default withStyles(styles)(CommentList);

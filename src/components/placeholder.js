@@ -1,6 +1,17 @@
 import React from 'react';
 import Icon from '@material-ui/core/Icon';
+import { withStyles } from '@material-ui/core/styles';
 import Style from 'style-it';
+
+const styles = {
+  placeholder: {
+    'text-align': 'center',
+    padding: '20px 10px'
+  },
+  icon: {
+    'font-size': '3rem'
+  }
+};
 
 const Placeholder = (props) => (
   <Style>

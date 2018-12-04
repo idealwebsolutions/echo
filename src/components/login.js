@@ -1,11 +1,17 @@
 import React from 'react';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
 import { auth } from 'firebase/app';
 
 import { importAuth } from '../firebase';
 import { FirebaseUIContainer } from '../constants';
 import { generateLoginConfig, Noop } from '../util';
 
-import ActionButton from './button';
+const styles = {
+  signOut: {
+    width: '100%'
+  }
+};
 
 class LoginScreen extends React.Component {
   constructor (props) {
@@ -64,7 +70,7 @@ class LoginScreen extends React.Component {
   render () {
     if (this.state.signedIn) {
       return (
-        <ActionButton color='secondary' onClick={() => this.props.fb.auth().signOut()} value='Sign out' />
+        <Button variant="contained" color="secondary" className={this.props.classes.signOut} onClick={() => this.props.fb.auth().signOut()}>Sign out</Button>
       )
     }
     // TODO: requires firebase ui container to exist in both instances 
@@ -72,4 +78,4 @@ class LoginScreen extends React.Component {
   }
 }
 
-export default LoginScreen;
+export default withStyles(styles)(LoginScreen);
