@@ -28,7 +28,8 @@ const globalStyles = {
       padding: 0
     },
     body: {
-      'font-family': '"Roboto", sans-serif'
+      'font-family': '"Roboto", sans-serif',
+      'background-color': 'transparent !important'
     }
   },
 };
