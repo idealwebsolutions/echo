@@ -14,7 +14,6 @@
   "license": "",
   "dependencies": {
     "@material-ui/core": "^3.5.1",
-    "@material-ui/styles": "^3.0.0-alpha.0",
     "decay": "^1.0.12",
     "document-ready": "^2.0.1",
     "emoji-dictionary": "^1.0.9",
@@ -22,6 +21,7 @@
     "firebase-admin": "^6.2.0",
     "firebaseui": "^3.4.1",
     "iframe-resizer": "^3.6.3",
+    "jss-global": "^3.0.0",
     "prop-types": "^15.6.2",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
@@ -33,7 +33,6 @@
     "react-show-more-text": "^1.0.4",
     "react-toastify": "^4.4.1",
     "spacetime": "^4.5.1",
-    "style-it": "^2.0.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

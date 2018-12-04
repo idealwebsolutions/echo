@@ -8,9 +8,27 @@ import {
   createMuiTheme
 } from '@material-ui/core/styles';
 import JssProvider from 'react-jss/lib/JssProvider';
+import global from 'jss-global';
 import blue from '@material-ui/core/colors/blue';
 import Frame, { FrameContextConsumer } from 'react-frame-component';
 import { iframeResizer } from 'iframe-resizer';
+
+const globalStyles = {
+  '@global': {
+    '@import': [
+      'url("https://fonts.googleapis.com/css?family=Roboto:300,400,500")',
+      'url("https://fonts.googleapis.com/icon?family=Material+Icons")',
+      'url("https://cdn.firebase.com/libs/firebaseui/3.4.1/firebaseui.css")'
+    ],
+    '*': {
+      'box-sizing': 'border-box'
+    },
+    ul: {
+      'list-style-type': 'none',
+      padding: 0
+    }
+  },
+};
 
 const styles = (theme) => ({
   root: {
@@ -110,7 +128,11 @@ class ResizableFrame extends React.Component {
             const jss = create({
               ...jssPreset(),
               insertionPoint: document.body
-            })
+            });
+
+            jss.use(global());
+
+            document.head.innerHTML = '<style>' + jss.createStyleSheet(globalStyles) + '</style>';
 
             return (
               <JssProvider jss={jss} generateClassName={generateClassName}>
