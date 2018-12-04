@@ -1,7 +1,6 @@
 import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { withStyles } from '@material-ui/core/styles';
 
 import Loading from './loading';
 import Toolbar from './toolbar';
@@ -12,12 +11,6 @@ import ResizableFrame from './frame';
 import { importApp, importDatabase } from '../firebase';
 
 import 'react-toastify/dist/ReactToastify.min.css';
-
-const styles = {
-  base: {
-    'font-family': '\'Roboto\', sans-serif'
-  }
-};
 
 class App extends React.Component {
   constructor (props) {
@@ -83,14 +76,13 @@ class App extends React.Component {
   render () {
     return (
       <React.Fragment>
-        <CssBaseline />
         <ResizableFrame 
           id="echo-content" 
           style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
-            <div className={this.props.classes.base}>
             {
               this.state.ready ?
                 <React.Fragment>
+                  <CssBaseline />
                   <header>
                     <Toolbar totalComments={this.state.comments.length} />
                   </header>
@@ -106,7 +98,6 @@ class App extends React.Component {
                   </footer>
                 </React.Fragment> : <Loading />
             }
-            </div>
           </ResizableFrame>
         <ToastContainer />
       </React.Fragment>
@@ -114,4 +105,4 @@ class App extends React.Component {
   }
 };
 
-export default withStyles(styles)(App);
+export default App;

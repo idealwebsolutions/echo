@@ -26,6 +26,9 @@ const globalStyles = {
     ul: {
       'list-style-type': 'none',
       padding: 0
+    },
+    body: {
+      'font-family': '"Roboto", sans-serif'
     }
   },
 };
