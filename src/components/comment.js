@@ -1,6 +1,8 @@
 import React from 'react';
 import ShowMoreText from 'react-show-more-text';
 import ReactMarkdown from 'react-markdown';
+import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import { withStyles } from '@material-ui/core/styles';
 import spacetime from 'spacetime';
 
@@ -24,62 +26,56 @@ Comment {
 const styles = {
   comment: {
     padding: 10
+  },
+  commentContainer: {
+    'margin-left': 15
+  },
+  commentAuthor: {
+    color: '#FF5733',
+    'font-weight': 'bold'
+  },
+  commentDate: {
+    'margin-left': 15
+  },
+  commentIcon: {
+    'font-size': '1.5rem',
+    cursor: 'pointer'
+  },
+  commentHeader: {
+    display: 'flex',
+    'flex-direction': 'row',
+    'font-size': '0.9rem'
   }
 };
 
+/* .icon:not(:first-child):not(:last-child) { margin-left: 15px; margin-right: 15px} */
+
 const Comment = (props) => (
-      /*.comment-avatar {
-        flex: 1;
-      }
-
-      .comment-container {
-        flex: 2 auto;
-        margin-left: 15px;
-      }
-
-      .comment-header, .comment-footer {
-        display: flex;
-        flex-direction: row;
-        font-size: 0.9rem;
-      }
-
-      .comment-author {
-        color: #FF5733;
-        font-weight: bold;
-      }
-
-      .comment-date {
-        margin-left: 15px;
-      }
-
-      .comment-footer > .icon {
-        font-size: 1.5rem;
-        cursor: pointer;
-      }
-
-      .comment-footer > .icon:not(:first-child):not(:last-child) {
-        margin-left: 15px;
-        margin-right: 15px;
-      }*/
-    <li key={props.id} className="comment">
-      <Avatar className="comment-avatar" user={props.user} />
-      <article className="comment-container">
-        <header className="comment-header">
-          <span className="comment-author">{props.user.name}</span>
-          <span className="comment-date">{spacetime(props.date).fromNow().qualified}</span>
-        </header>
-        <ReactMarkdown 
-          className="comment-body" 
-          source={props.content}
-          skipHtml={true}
-        />
-        <footer className="comment-footer">
-          <i className="icon ion-ios-arrow-up"></i>
-          <i className="icon ion-ios-arrow-down"></i>
-          <i className="icon ion-ios-flag"></i>
-        </footer>
-      </article>
-    </li>
+  <li key={props.id} className={props.classes.comment}>
+    <Grid container spacing={16}>
+      <Grid item xs={1}>
+        <Avatar user={props.user} />
+      </Grid>
+      <Grid item xs={11}>
+        <article className={props.classes.commentContainer}>
+          <header className={props.classes.commentHeader}>
+            <span className={props.classes.commentAuthor}>{props.user.name}</span>
+            <span className={props.classes.commentDate}>{spacetime(props.date).fromNow().qualified}</span>
+          </header>
+          <ReactMarkdown 
+            source={props.content}
+            disallowedItems={['link', 'linkReference']}
+            skipHtml={true}
+          />
+          <footer className={props.classes.commentHeader}>
+            <Icon className={props.classes.commentIcon}>keyboard_arrow_up</Icon>
+            <Icon className={props.classes.commentIcon}>keyboard_arrow_down</Icon>
+            <Icon className={props.classes.commentIcon}>flag</Icon>
+          </footer>
+        </article>
+      </Grid>
+    </Grid>
+  </li>
 )
 
 const CommentList = (props) => {

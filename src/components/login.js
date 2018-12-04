@@ -31,8 +31,7 @@ class LoginScreen extends React.Component {
       this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
         if (!user && this.state.signedIn) {
           this.uiWidget.reset();
-          /* This shouldn't need to happen, looking into a fix
-          this.renderWidget(generateLoginConfig([
+          /*this.renderWidget(generateLoginConfig([
             auth.GoogleAuthProvider.PROVIDER_ID,
             auth.EmailAuthProvider.PROVIDER_ID
           ]));*/
@@ -59,7 +58,7 @@ class LoginScreen extends React.Component {
   componentWillUnmount () {
     this.unregisterAuthObserver();
   }
-
+  
   renderWidget (loginConfig) {
     const targetFrame = document.querySelector('#echo-content');
     console.log(targetFrame)
@@ -73,6 +72,7 @@ class LoginScreen extends React.Component {
         <Button variant="contained" color="secondary" className={this.props.classes.signOut} onClick={() => this.props.fb.auth().signOut()}>Sign out</Button>
       )
     }
+
     // TODO: requires firebase ui container to exist in both instances 
     return <div id={FirebaseUIContainer}></div>
   }

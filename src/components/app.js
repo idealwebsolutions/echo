@@ -1,7 +1,8 @@
 import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Style from 'style-it';
+import { withStyles } from '@material-ui/core/styles';
+// import Style from 'style-it';
 
 import Loading from './loading';
 import Toolbar from './toolbar';
@@ -13,7 +14,25 @@ import { importApp, importDatabase } from '../firebase';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 
-// Applies global styles across app
+const styles = {
+  '@import': [
+    'url("https://fonts.googleapis.com/css?family=Roboto:300,400,500")',
+    'url("https://fonts.googleapis.com/icon?family=Material+Icons")',
+    'url("https://cdn.firebase.com/libs/firebaseui/3.4.1/firebaseui.css")'
+  ],
+  '*': {
+    'box-sizing': 'border-box'
+  },
+  ul: {
+    'list-style-type': 'none',
+    padding: 0
+  },
+  base: {
+    'font-family': '\'Roboto\', sans-serif'
+  }
+}
+
+/* Applies global styles across app
 const Base = ({ children }) => (
   <Style>
     {`
@@ -36,7 +55,7 @@ const Base = ({ children }) => (
     `}
     <div className="base">{children}</div>
   </Style>
-);
+);*/
 
 class App extends React.Component {
   constructor (props) {
@@ -72,6 +91,10 @@ class App extends React.Component {
       return this.alertError('Configuration failed: Invalid Firebase Project Id');
     }
 
+    if (!this.props.firebaseMessagingSenderId.length) {
+      return this.alertError('Configuration failed: Invalid Firebase Messaging Sender Id');
+    }
+
     console.log(window.location.pathname);
     
     importApp().then((app) => {
@@ -102,7 +125,7 @@ class App extends React.Component {
         <ResizableFrame 
           id="echo-content" 
           style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
-            <Base>
+            <div className={this.props.classes.base}>
             {
               this.state.ready ?
                 <React.Fragment>
@@ -121,7 +144,7 @@ class App extends React.Component {
                   </footer>
                 </React.Fragment> : <Loading />
             }
-            </Base>
+            </div>
           </ResizableFrame>
         <ToastContainer />
       </React.Fragment>
@@ -129,4 +152,4 @@ class App extends React.Component {
   }
 };
 
-export default App;
+export default withStyles(styles)(App);
