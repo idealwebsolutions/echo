@@ -9,6 +9,7 @@ import CommentList from './comment';
 import ResizableFrame from './frame';
 
 import { importApp, importDatabase } from '../firebase';
+import { fetchPostCount } from '../util';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 
@@ -18,6 +19,7 @@ class App extends React.Component {
     this.state = {
       ready: false,
       user: false,
+      totalComments: 0,
       comments: []
     };
     this.fb = null;
@@ -62,12 +64,25 @@ class App extends React.Component {
           storageBucket: `${this.props.firebaseProjectId}.appspot.com`,
           messagingSenderId: this.props.firebaseMessagingSenderId
         });
-        
-        const db = this.fb.database();
 
-        db.ref('/demo').once('value').then((snapshot) => console.log(snapshot.val()));
-        // db.ref('/demo/threads').on('value', (snapshot) => console.log(snapshot.val()));
-        //const t = db.ref('/threads/demo').push()
+        const ref = this.fb.database().ref('/forums/demo/posts');
+        
+        ref.once('value')
+          .then((snapshot) => console.log(snapshot.val()))
+          .catch((err) => console.error(err));
+        
+        fetchPostCount(this.props.firebaseProjectId, 'demo')
+          .then((response) => {
+            const postKeys = response.data;
+            
+            if (!postKeys) {
+              return;
+            }
+
+            this.setState({ totalComments: Object.keys(postKeys).length })
+          })
+          .catch((err) => console.error(err));
+
         this.setState({ ready: true });
       }).catch((err) => console.error(err));
     }).catch((err) => console.error(err));
@@ -84,7 +99,7 @@ class App extends React.Component {
                 <React.Fragment>
                   <CssBaseline />
                   <header>
-                    <Toolbar totalComments={this.state.comments.length} />
+                    <Toolbar totalComments={this.state.totalComments} />
                   </header>
                   <main>
                     <TextEditor 

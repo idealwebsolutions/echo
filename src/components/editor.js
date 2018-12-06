@@ -40,7 +40,7 @@ const Editor = (props) => (
       margin="normal"
       variant="outlined"
       value={props.post || ''}
-      onChange={props.onChange}
+      onChange={props.handleInputChange}
       disabled={!props.user}
     />
     { props.user ? 
@@ -56,8 +56,14 @@ const Editor = (props) => (
           </Files>
         </Grid>
         <Grid item>
-          <Button color="primary">Preview</Button>
+          <Button color="primary" onClick={props.handlePreview}>Preview</Button>
         </Grid>
+        {
+          props.preview ? 
+            <Grid item>
+              <Button color="primary">Edit</Button>
+            </Grid> : null
+        }
       </Grid> : null 
     }
   </form>
@@ -107,10 +113,11 @@ class TextEditor extends React.Component {
       return;
     }
 
-    const newThread = this.props.fb.database().ref('/forums/demo/threads').push();
-    newThread.set({
+    const newPost = this.props.fb.database().ref('/forums/demo/posts').push();
+    newPost.set({
       uid: this.props.user.uid,
-      content: this.state.post
+      content: this.state.post,
+      reply: null
     })
     .then(() => console.log('created new post'))
     .catch((err) => console.error(err));
@@ -138,7 +145,7 @@ class TextEditor extends React.Component {
               { this.state.preview ? 
                 <React.Suspense fallback={Loading}>
                   <Preview disallowedTypes={['link', 'linkReference']} source={this.state.post} />
-                </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} />
+                </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} handleInputChange={this.handleTextInput.bind(this)} handlePreview={this.previewPost.bind(this)} preview={this.state.preview} />
               }
             </Grid>
           </Grid> : <Editor classes={this.props.classes} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} /> 

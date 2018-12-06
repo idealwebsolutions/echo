@@ -1,3 +1,4 @@
+import { get } from 'axios';
 // No-op
 export const Noop = () => {};
 // Generates login configuration based on providers
@@ -15,3 +16,7 @@ export const generateLoginConfig = (providers = []) => {
     }
   };
 };
+// Fetches count of post keys
+export const fetchPostCount = (app, topic) => {
+  return get(`https://${app}.firebaseio.com/forums/${topic}/posts.json?shallow=true`)
+}
