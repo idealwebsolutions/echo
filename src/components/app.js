@@ -9,7 +9,7 @@ import CommentList from './comment';
 import ResizableFrame from './frame';
 
 import { importApp, importDatabase } from '../firebase';
-import { fetchPostCount } from '../util';
+import { generatePostsUrl, fetchPostCount } from '../util';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 
@@ -65,12 +65,10 @@ class App extends React.Component {
           messagingSenderId: this.props.firebaseMessagingSenderId
         });
 
-        const ref = this.fb.database().ref('/forums/demo/posts');
+        const ref = this.fb.database().ref(generatePostsUrl('demo'));
         
-        ref.once('value')
-          .then((snapshot) => console.log(snapshot.val()))
-          .catch((err) => console.error(err));
-        
+        ref.limitToFirst(10).on('child_added', (snapshot) => console.log(snapshot.val()));
+
         fetchPostCount(this.props.firebaseProjectId, 'demo')
           .then((response) => {
             const postKeys = response.data;

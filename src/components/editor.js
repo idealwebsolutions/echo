@@ -12,6 +12,7 @@ import Loading from './loading';
 
 import { importStorage } from '../firebase';
 import { Attachments } from '../constants';
+import { generatePostsUrl } from '../util';
 
 const Preview = React.lazy(() => import('react-markdown'));
 const ImageAvatar = React.lazy(() => import('./avatar'));
@@ -25,7 +26,8 @@ const styles = {
     padding: '50px 25px !important'
   },
   actionBar: {
-    'min-height': 40
+    'min-height': 40,
+    'margin-top': 20
   }
 };
 
@@ -43,29 +45,6 @@ const Editor = (props) => (
       onChange={props.handleInputChange}
       disabled={!props.user}
     />
-    { props.user ? 
-      <Grid className={props.classes.editorToolbar} spacing={24} justify="space-between" container>
-        <Grid item>
-          <Files 
-            accepts={['image/*']}
-            onError={(err) => console.error(err)}
-            onChange={props.handleAssetInput}>
-            <Button color="primary">
-              Upload
-            </Button>
-          </Files>
-        </Grid>
-        <Grid item>
-          <Button color="primary" onClick={props.handlePreview}>Preview</Button>
-        </Grid>
-        {
-          props.preview ? 
-            <Grid item>
-              <Button color="primary">Edit</Button>
-            </Grid> : null
-        }
-      </Grid> : null 
-    }
   </form>
 );
 
@@ -104,8 +83,8 @@ class TextEditor extends React.Component {
     });
   }
 
-  previewPost () {
-    this.setState({ preview: true });
+  togglePreview (preview) {
+    this.setState({ preview });
   }
 
   submitPost () {
@@ -113,7 +92,7 @@ class TextEditor extends React.Component {
       return;
     }
 
-    const newPost = this.props.fb.database().ref('/forums/demo/posts').push();
+    const newPost = this.props.fb.database().ref(generatePostsUrl('demo')).push();
     newPost.set({
       uid: this.props.user.uid,
       content: this.state.post,
@@ -145,10 +124,31 @@ class TextEditor extends React.Component {
               { this.state.preview ? 
                 <React.Suspense fallback={Loading}>
                   <Preview disallowedTypes={['link', 'linkReference']} source={this.state.post} />
-                </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} handleInputChange={this.handleTextInput.bind(this)} handlePreview={this.previewPost.bind(this)} preview={this.state.preview} />
+                </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleInputChange={this.handleTextInput.bind(this)} />
               }
+              <Grid className={this.props.classes.editorToolbar} spacing={16} justify="space-between" container>
+                <Grid item>
+                  <Files 
+                    accepts={['image/*']}
+                    onError={(err) => console.error(err)}
+                    onChange={this.handleAssetInput.bind(this)}>
+                    <Button color="primary">
+                      Upload
+                    </Button>
+                  </Files>
+                </Grid>
+                <Grid item>
+                  <Button color="primary" onClick={this.state.preview ? this.submitPost.bind(this) : this.togglePreview.bind(this, true)}>{this.state.preview ? 'Submit' : 'Preview'}</Button>
+                </Grid>
+                {
+                  this.state.preview ? 
+                  <Grid item>
+                    <Button color="primary" onClick={this.togglePreview.bind(this, false)}>Edit</Button>
+                  </Grid> : null
+                }
+              </Grid>
             </Grid>
-          </Grid> : <Editor classes={this.props.classes} user={this.props.user} handleAssetInput={this.handleAssetInput.bind(this)} onChange={this.handleTextInput.bind(this)} /> 
+          </Grid> : <Editor classes={this.props.classes} user={this.props.user} onChange={() => {}} /> 
         }
         <div className={this.props.classes.actionBar}>
           <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />

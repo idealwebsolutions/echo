@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 
 admin.initializeApp(functions.config().firebase);
 
-exports.postProcessPostCreated = functions.database.ref('/forums/demo/threads/{threadId}').onCreate((snapshot) => {
+exports.postProcessPostCreated = functions.database.ref('/forums/{topic}/posts/{threadId}').onCreate((snapshot) => {
   const post = snapshot.toJSON();
   
   console.log(`Processing new post created: ${post}`);
@@ -11,7 +11,8 @@ exports.postProcessPostCreated = functions.database.ref('/forums/demo/threads/{t
   return snapshot.ref.update(Object.assign({}, post, {
     created: Date.now(),
     upvotes: 0,
-    downvotes: 0
+    downvotes: 0,
+    processed: true
   }));
 });
 

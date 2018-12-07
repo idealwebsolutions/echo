@@ -18,5 +18,7 @@ export const generateLoginConfig = (providers = []) => {
 };
 // Fetches count of post keys
 export const fetchPostCount = (app, topic) => {
-  return get(`https://${app}.firebaseio.com/forums/${topic}/posts.json?shallow=true`)
+  return get(`https://${app}.firebaseio.com/forums/${topic}/posts.json?shallow=true`);
 }
+//
+export const generatePostsUrl = (topic) => `/forums/${topic}/posts`;
