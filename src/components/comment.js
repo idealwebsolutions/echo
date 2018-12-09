@@ -2,12 +2,16 @@ import React from 'react';
 import ShowMoreText from 'react-show-more-text';
 import ReactMarkdown from 'react-markdown';
 import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Icon from '@material-ui/core/Icon';
 import { withStyles } from '@material-ui/core/styles';
 import spacetime from 'spacetime';
 
 import Placeholder from './placeholder';
-import Avatar from './avatar';
+import CustomAvatar from './avatar';
 
 /*
 Comment {
@@ -24,12 +28,6 @@ Comment {
 */
 
 const styles = {
-  comment: {
-    padding: 10
-  },
-  commentContainer: {
-    'margin-left': 15
-  },
   commentAuthor: {
     color: '#FF5733',
     'font-weight': 'bold'
@@ -51,31 +49,29 @@ const styles = {
 /* .icon:not(:first-child):not(:last-child) { margin-left: 15px; margin-right: 15px} */
 
 const Comment = (props) => (
-  <li key={props.id} className={props.classes.comment}>
-    <Grid container spacing={16}>
-      <Grid item xs={1}>
-        <Avatar user={props.user} />
-      </Grid>
-      <Grid item xs={11}>
-        <article className={props.classes.commentContainer}>
-          <header className={props.classes.commentHeader}>
-            <span className={props.classes.commentAuthor}>{props.user.name}</span>
-            <span className={props.classes.commentDate}>{spacetime(props.date).fromNow().qualified}</span>
-          </header>
-          <ReactMarkdown 
-            source={props.content}
-            disallowedItems={['link', 'linkReference']}
-            skipHtml={true}
-          />
-          <footer className={props.classes.commentHeader}>
-            <Icon className={props.classes.commentIcon}>keyboard_arrow_up</Icon>
-            <Icon className={props.classes.commentIcon}>keyboard_arrow_down</Icon>
-            <Icon className={props.classes.commentIcon}>flag</Icon>
-          </footer>
-        </article>
-      </Grid>
-    </Grid>
-  </li>
+  <ListItem key={props.id} alignItems="flex-start">
+    <ListItemAvatar>
+      <Avatar user={props.user} />
+    </ListItemAvatar>
+    <ListItemText>
+      <article>
+        <header className={props.classes.commentHeader}>
+          <span className={props.classes.commentAuthor}>{props.user.name}</span>
+          <span className={props.classes.commentDate}>{spacetime(props.date).fromNow().qualified}</span>
+        </header>
+        <ReactMarkdown 
+          source={props.content}
+          disallowedItems={['link', 'linkReference']}
+          skipHtml={true}
+        />
+        <footer className={props.classes.commentHeader}>
+          <Icon className={props.classes.commentIcon}>keyboard_arrow_up</Icon>
+          <Icon className={props.classes.commentIcon}>keyboard_arrow_down</Icon>
+          <Icon className={props.classes.commentIcon}>flag</Icon>
+        </footer>
+      </article>
+    </ListItemText>
+  </ListItem>
 )
 
 const CommentList = (props) => {
@@ -95,7 +91,7 @@ const CommentList = (props) => {
     />
   ));
 
-  return (<ul className="comments">{comments}</ul>);
+  return (<List className={props.classes.root}>{comments}</List>);
 }
 
 export default withStyles(styles)(CommentList);

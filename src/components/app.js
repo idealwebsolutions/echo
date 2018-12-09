@@ -67,7 +67,7 @@ class App extends React.Component {
 
         const ref = this.fb.database().ref(generatePostsUrl('demo'));
         
-        ref.limitToFirst(10).on('child_added', (snapshot) => console.log(snapshot.val()));
+        ref.orderByChild('created').limitToFirst(10).once('value', (snapshot) => console.log(snapshot.val()));
 
         fetchPostCount(this.props.firebaseProjectId, 'demo')
           .then((response) => {
@@ -82,6 +82,8 @@ class App extends React.Component {
           .catch((err) => console.error(err));
 
         this.setState({ ready: true });
+
+        ref.on("child_changed", (snapshot) => console.log(snapshot.val()));
       }).catch((err) => console.error(err));
     }).catch((err) => console.error(err));
   }

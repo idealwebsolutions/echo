@@ -15,7 +15,7 @@ import { Attachments } from '../constants';
 import { generatePostsUrl } from '../util';
 
 const Preview = React.lazy(() => import('react-markdown'));
-const ImageAvatar = React.lazy(() => import('./avatar'));
+const CustomAvatar = React.lazy(() => import('./avatar'));
 
 const styles = {
   editor: {
@@ -116,7 +116,7 @@ class TextEditor extends React.Component {
             <Hidden xsDown>
               <Grid className={this.props.classes.avatar} item xs={2}>
                 <React.Suspense fallback={Loading}>
-                  <ImageAvatar user={this.props.user} />
+                  <CustomAvatar user={this.props.user} />
                 </React.Suspense>
               </Grid>
             </Hidden>

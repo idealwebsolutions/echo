@@ -11,18 +11,15 @@ const styles = {
   textAvatar: {
     backgroundColor: deepOrange[500]
   }
-};
+}; // should generate random background color
 
 /* display: flex, 
   * flex-direction: column, 
   * justify-content: center */
 
-const ImageAvatar = (props) => (
-  <Avatar alt={props.user.name} src={props.user.avatar} className={props.classes.avatar} />
+const CustomAvatar = (props) => ( props.user.avatar ?
+  <Avatar alt={props.user.name} src={props.user.avatar} className={props.classes.avatar} /> 
+  : <Avatar alt={props.user.name} className={props.classes.avatar.concat(props.classes.textAvatar)}>${props.user.name[0].toUpperCase()}</Avatar>
 );
 
-const IconAvatar = (props) => (
-  <Avatar alt={props.user.name} className={props.classes.avatar.concat(props.classes.textAvatar)}>${props.user.name[0].toUpperCase()}</Avatar>
-);
-
-export default withStyles(styles)(ImageAvatar);
+export default withStyles(styles)(CustomAvatar);
