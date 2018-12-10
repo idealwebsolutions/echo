@@ -1,5 +1,6 @@
 import React from 'react';
 import Icon from '@material-ui/core/Icon';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
@@ -11,14 +12,16 @@ const styles = {
     'font-size': '3rem'
   },
   title: {
-    'margin-top': -5
+    'margin-top': -1
   }
 };
 
 const Placeholder = (props) => (
   <div className={props.classes.placeholder}>
     <Icon className={props.classes.icon}>{props.icon}</Icon>
-    <h3 className={props.classes.title}>{props.title}</h3>
+    <Typography variant="h6" className={props.classes.title}>
+      {props.title}
+    </Typography>
   </div>
 );
 

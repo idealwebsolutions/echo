@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import Loading from './loading';
@@ -9,7 +9,11 @@ import CommentList from './comment';
 import ResizableFrame from './frame';
 
 import { importApp, importDatabase } from '../firebase';
-import { generatePostsUrl, fetchPostCount } from '../util';
+import { 
+  makeToast, 
+  generatePostsUrl, 
+  fetchPostCount 
+} from '../util';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 
@@ -18,7 +22,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       ready: false,
-      user: false,
+      user: null,
       totalComments: 0,
       comments: []
     };
@@ -31,25 +35,19 @@ class App extends React.Component {
     });
   }
 
-  alertError (errorMessage) {
-    toast.error(errorMessage, { 
-      position: toast.POSITION.BOTTOM_CENTER 
-    });
-  }
-
   componentDidMount () {
     this.setState({ ready: false });
     
     if (!this.props.firebaseApiKey.length) {
-      return this.alertError('Configuration failed: Invalid Firebase API key');
+      return makeToast('Configuration failed: Invalid Firebase API key', true);
     }
 
     if (!this.props.firebaseProjectId.length) {
-      return this.alertError('Configuration failed: Invalid Firebase Project Id');
+      return makeToast('Configuration failed: Invalid Firebase Project Id', true);
     }
 
     if (!this.props.firebaseMessagingSenderId.length) {
-      return this.alertError('Configuration failed: Invalid Firebase Messaging Sender Id');
+      return makeToast('Configuration failed: Invalid Firebase Messaging Sender Id', true);
     }
 
     console.log(window.location.pathname);
@@ -65,10 +63,20 @@ class App extends React.Component {
           messagingSenderId: this.props.firebaseMessagingSenderId
         });
 
-        const ref = this.fb.database().ref(generatePostsUrl('demo'));
-        
-        ref.orderByChild('created').limitToFirst(10).once('value', (snapshot) => console.log(snapshot.val()));
-
+        const postsRef = this.fb.database().ref(generatePostsUrl('demo'));
+        // 
+        postsRef.orderByChild('created').limitToFirst(10).once('value', (snapshot) => {
+          const comments = snapshot.val();
+          this.setState({
+            comments: this.state.comments.concat(Object.keys(comments).map((key) => comments[key]))
+          });
+          console.log(this.state.comments);
+        });
+        // 
+        postsRef.on('child_changed', (snapshot) => {
+          console.log(snapshot.val());
+        });
+        // 
         fetchPostCount(this.props.firebaseProjectId, 'demo')
           .then((response) => {
             const postKeys = response.data;
@@ -80,14 +88,13 @@ class App extends React.Component {
             this.setState({ totalComments: Object.keys(postKeys).length })
           })
           .catch((err) => console.error(err));
-
+        //
         this.setState({ ready: true });
-
-        ref.on("child_changed", (snapshot) => console.log(snapshot.val()));
       }).catch((err) => console.error(err));
     }).catch((err) => console.error(err));
   }
-
+  
+  // TODO: replace fb with functions that require firebase data
   render () {
     return (
       <React.Fragment>
@@ -99,17 +106,20 @@ class App extends React.Component {
                 <React.Fragment>
                   <CssBaseline />
                   <header>
-                    <Toolbar totalComments={this.state.totalComments} />
+                    <Toolbar 
+                      fb={this.fb}
+                      totalComments={this.state.totalComments} />
                   </header>
                   <main>
                     <TextEditor 
                       fb={this.fb} 
                       user={this.state.user} 
-                      alertError={this.alertError}
                       updateAuthState={this.updateAuthState.bind(this)} />
                   </main>
                   <footer>
-                    <CommentList comments={this.state.comments} />
+                    <CommentList 
+                      fb={this.fb}
+                      comments={this.state.comments} />
                   </footer>
                 </React.Fragment> : <Loading />
             }

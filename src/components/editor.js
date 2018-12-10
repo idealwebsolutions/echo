@@ -12,13 +12,13 @@ import Loading from './loading';
 
 import { importStorage } from '../firebase';
 import { Attachments } from '../constants';
-import { generatePostsUrl } from '../util';
+import { makeToast, generatePostsUrl } from '../util';
 
 const Preview = React.lazy(() => import('react-markdown'));
 const CustomAvatar = React.lazy(() => import('./avatar'));
 
 const styles = {
-  editor: {
+  root: {
     padding: 10,
     width: '100%'
   },
@@ -32,7 +32,7 @@ const styles = {
 };
 
 const Editor = (props) => (
-  <form className={props.classes.editor} noValidate autoComplete="off">
+  <form className={props.classes.root} noValidate autoComplete="off">
     <TextField
       fullWidth
       label="Add to the discussion"
@@ -78,9 +78,7 @@ class TextEditor extends React.Component {
         })
       });
     });
-    uploadTask.catch((err) => {
-      console.error(err);
-    });
+    uploadTask.catch((err) => makeToast(err.message, true));
   }
 
   togglePreview (preview) {
@@ -98,8 +96,8 @@ class TextEditor extends React.Component {
       content: this.state.post,
       reply: null
     })
-    .then(() => console.log('created new post'))
-    .catch((err) => console.error(err));
+    .then(() => console.log('Comment submitted'))
+    .catch((err) => makeToast(err.message, true));
   }
 
   componentWillMount () {

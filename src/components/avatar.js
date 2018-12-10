@@ -13,13 +13,9 @@ const styles = {
   }
 }; // should generate random background color
 
-/* display: flex, 
-  * flex-direction: column, 
-  * justify-content: center */
-
 const CustomAvatar = (props) => ( props.user.avatar ?
   <Avatar alt={props.user.name} src={props.user.avatar} className={props.classes.avatar} /> 
-  : <Avatar alt={props.user.name} className={props.classes.avatar.concat(props.classes.textAvatar)}>${props.user.name[0].toUpperCase()}</Avatar>
+  : <Avatar alt={props.user.name} className={props.classes.avatar.concat(props.classes.textAvatar)}>${props.user.name[0].toUpperCase()}</Avatar> 
 );
 
 export default withStyles(styles)(CustomAvatar);
