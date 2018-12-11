@@ -35,6 +35,10 @@ class App extends React.Component {
     });
   }
 
+  fetchUser (uid, done) {
+    this.fb.database().ref('/users/' + uid).once('value', done);
+  }
+
   componentDidMount () {
     this.setState({ ready: false });
     
@@ -70,7 +74,6 @@ class App extends React.Component {
           this.setState({
             comments: this.state.comments.concat(Object.keys(comments).map((key) => comments[key]))
           });
-          console.log(this.state.comments);
         });
         // 
         postsRef.on('child_changed', (snapshot) => {
@@ -118,8 +121,8 @@ class App extends React.Component {
                   </main>
                   <footer>
                     <CommentList 
-                      fb={this.fb}
-                      comments={this.state.comments} />
+                      comments={this.state.comments}
+                      fetchUser={this.fetchUser.bind(this)} />
                   </footer>
                 </React.Fragment> : <Loading />
             }

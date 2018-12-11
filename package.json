@@ -24,6 +24,7 @@
     "iframe-resizer": "^3.6.3",
     "jss-global": "^3.0.0",
     "prop-types": "^15.6.2",
+    "random-material-color": "^1.0.3",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
     "react-files": "^2.4.7",

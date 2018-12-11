@@ -18,15 +18,11 @@ const styles = {
   root: {
     width: '100%'
   },
-  inline: {
-    display: 'inline'
-  },
   commentAuthor: {
-    color: '#FF5733',
-    'font-weight': 'bold'
-  },
-  commentDate: {
-    'margin-left': 15
+    display: 'inline',
+    'margin-right': 15
+    //color: '#FF5733',
+    //'font-weight': 'bold'
   },
   commentIcon: {
     'font-size': '1.5rem',
@@ -50,11 +46,10 @@ class Comment extends React.Component {
 
   componentDidMount () {
     this.setState({ ready: false });
-    this.props.fb.database().ref('/users/' + this.props.uid)
-      .once('value', (snapshot) => {
-        console.log(snapshot.val());
-        this.setState({ author: snapshot.val(), ready: true })
-      });
+    this.props.fetchUser(this.props.uid, (snapshot) => this.setState({ 
+      author: snapshot.val(), 
+      ready: true 
+    }));
   }
 
   render () {
@@ -63,38 +58,37 @@ class Comment extends React.Component {
     }
     
     return (
-      <ListItem key={props.id} alignItems="flex-start">
+      <ListItem alignItems="flex-start">
         <ListItemAvatar>
-          <Avatar user={this.state.author} />
+          <CustomAvatar user={this.state.author} />
         </ListItemAvatar>
         <ListItemText 
           primary={
             <React.Fragment>
-              <Typography component="span" className={props.classes.inline} color="textPrimary">
+              <Typography variant="subtitle1" className={this.props.classes.commentAuthor} color="textPrimary">
                 {this.state.author.name}
               </Typography>
-              {spacetime(props.created).fromNow().qualified}
+              {spacetime(this.props.created).fromNow().qualified}
             </React.Fragment>
           }
           secondary={
             <React.Fragment>
               <header>
                 <ReactMarkdown 
-                  source={props.content}
+                  source={this.props.content}
                   disallowedItems={['link', 'linkReference']}
-                  skipHtml={true}
                 />
               </header>
-              <footer className={props.classes.footer}>
+              <footer className={this.props.classes.footer}>
                 <Grid container spacing={24}>
                   <Grid item>
-                    <Icon className={props.classes.commentIcon}>keyboard_arrow_up</Icon>
+                    <Icon className={this.props.classes.commentIcon}>keyboard_arrow_up</Icon>
                   </Grid>
                   <Grid item>
-                    <Icon className={props.classes.commentIcon}>keyboard_arrow_down</Icon>
+                    <Icon className={this.props.classes.commentIcon}>keyboard_arrow_down</Icon>
                   </Grid>
                   <Grid item>
-                    <Icon className={props.classes.commentIcon}>flag</Icon>
+                    <Icon className={this.props.classes.commentIcon}>flag</Icon>
                   </Grid>
                 </Grid>
               </footer>
@@ -110,11 +104,11 @@ const CommentList = (props) => {
   if (!props.comments.length) {
     return <Placeholder title="No comments found" icon="comment" />;
   }
-
-  const comments = props.comments.map((comment, index) => (
+  
+  const comments = props.comments.map((comment) => (
     <Comment
-      fb={props.fb}
-      id={index}
+      fetchUser={props.fetchUser}
+      classes={props.classes}
       uid={comment.uid}
       created={comment.created}
       upvotes={comment.upvotes}
@@ -122,7 +116,6 @@ const CommentList = (props) => {
       content={comment.content}
     />
   ));
-
   return (<List className={props.classes.root}>{comments}</List>);
 }
 
