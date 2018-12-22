@@ -26,9 +26,9 @@ class LoginScreen extends React.Component {
   componentDidMount () {
     const firebaseui = require('firebaseui');
     importAuth().then(() => {
-      this.uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.props.fb.auth());
+      this.uiWidget = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.props.getAuth());
       this.uiWidget.reset();
-      this.unregisterAuthObserver = this.props.fb.auth().onAuthStateChanged((user) => {
+      this.unregisterAuthObserver = this.props.getAuth().onAuthStateChanged((user) => {
         if (!user && this.state.signedIn) {
           this.uiWidget.reset();
           /*this.renderWidget(generateLoginConfig([
@@ -61,7 +61,6 @@ class LoginScreen extends React.Component {
   
   renderWidget (loginConfig) {
     const targetFrame = document.querySelector('#echo-content');
-    console.log(targetFrame)
     const container = targetFrame.contentDocument.body.querySelector(`#${FirebaseUIContainer}`);
     this.uiWidget.start(container, loginConfig);
   }

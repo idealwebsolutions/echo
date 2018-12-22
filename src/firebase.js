@@ -2,8 +2,8 @@ function importApp () {
   return import(/* chunkname: 'firebase-app' */ 'firebase/app');
 }
 
-function importDatabase () {
-  return import(/* chunkname: 'firebase-database' */ 'firebase/database');
+function importFirestore () {
+  return import(/* chunkname: 'firebase-firestore' */ 'firebase/firestore');
 }
 
 function importStorage () {
@@ -18,4 +18,4 @@ function importMessaging () {
   return import(/* chunkname: 'firebase-messaging' */ 'firebase/messaging');
 }
 
-export { importApp, importAuth, importDatabase, importStorage };
+export { importApp, importAuth, importFirestore, importStorage };

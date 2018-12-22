@@ -8,11 +8,9 @@ import TextEditor from './editor';
 import CommentList from './comment';
 import ResizableFrame from './frame';
 
-import { importApp, importDatabase } from '../firebase';
+import { importApp, importFirestore } from '../firebase';
 import { 
   makeToast, 
-  generatePostsUrl, 
-  fetchPostCount 
 } from '../util';
 
 import 'react-toastify/dist/ReactToastify.min.css';
@@ -35,8 +33,20 @@ class App extends React.Component {
     });
   }
 
-  fetchUser (uid, done) {
-    this.fb.database().ref('/users/' + uid).once('value', done);
+  getFirestore() {
+    const firestore = this.fb.firestore();
+    firestore.settings({
+      timestampsInSnapshots: true
+    });
+    return firestore;
+  }
+
+  getStorage () {
+    return this.fb.storage();
+  }
+
+  getAuth () {
+    return this.fb.auth();
   }
 
   componentDidMount () {
@@ -57,7 +67,7 @@ class App extends React.Component {
     console.log(window.location.pathname);
     
     importApp().then((app) => {
-      importDatabase().then(() => {
+      importFirestore().then(() => {
         this.fb = app.initializeApp({
           apiKey: this.props.firebaseApiKey,
           authDomain: `${this.props.firebaseProjectId}.firebaseapp.com`,
@@ -67,37 +77,50 @@ class App extends React.Component {
           messagingSenderId: this.props.firebaseMessagingSenderId
         });
 
-        const postsRef = this.fb.database().ref(generatePostsUrl('demo'));
-        // 
-        postsRef.orderByChild('created').limitToFirst(10).once('value', (snapshot) => {
-          const comments = snapshot.val();
+        //this.getFirestore().enablePersistence()
+        //.catch((err) => makeToast(err.message, true))
+
+        const demoRef = this.getFirestore().collection('topics').doc('demo');
+        
+        const snapshotTotal = this.getFirestore().collection('posts')
+          .where('topic', '==', demoRef);
+        
+        snapshotTotal.onSnapshot((snapshot) => {
+          if (snapshot.empty) {
+            return;
+          }
+
+          this.setState({ totalComments: snapshot.size });
+        }, (err) => console.error(err));
+
+        const threadQuery = this.getFirestore().collection('posts')
+          .where('topic', '==', demoRef)
+          .where('reply', '==', null)
+          .orderBy('created')
+          .limit(10);
+
+        threadQuery.get().then((snapshot) => {
+          if (snapshot.empty) {
+            return;
+          }
+          
           this.setState({
-            comments: this.state.comments.concat(Object.keys(comments).map((key) => comments[key]))
+            comments: this.state.comments.concat(snapshot.docs.map((doc) => Object.assign({}, doc.data(), {
+              id: doc.id
+            })))
           });
-        });
-        // 
+        })
+        .catch((err) => console.error(err));
+        /* 
         postsRef.on('child_changed', (snapshot) => {
           console.log(snapshot.val());
-        });
+        });*/
         // 
-        fetchPostCount(this.props.firebaseProjectId, 'demo')
-          .then((response) => {
-            const postKeys = response.data;
-            
-            if (!postKeys) {
-              return;
-            }
-
-            this.setState({ totalComments: Object.keys(postKeys).length })
-          })
-          .catch((err) => console.error(err));
-        //
         this.setState({ ready: true });
       }).catch((err) => console.error(err));
     }).catch((err) => console.error(err));
   }
   
-  // TODO: replace fb with functions that require firebase data
   render () {
     return (
       <React.Fragment>
@@ -110,19 +133,22 @@ class App extends React.Component {
                   <CssBaseline />
                   <header>
                     <Toolbar 
-                      fb={this.fb}
-                      totalComments={this.state.totalComments} />
+                      totalComments={this.state.totalComments}
+                      getFirestore={this.getFirestore.bind(this)} />
                   </header>
                   <main>
                     <TextEditor 
-                      fb={this.fb} 
                       user={this.state.user} 
-                      updateAuthState={this.updateAuthState.bind(this)} />
+                      updateAuthState={this.updateAuthState.bind(this)}
+                      getStorage={this.getStorage.bind(this)}
+                      getAuth={this.getAuth.bind(this)}
+                      getFirestore={this.getFirestore.bind(this)} />
                   </main>
                   <footer>
                     <CommentList 
+                      user={this.state.user}
                       comments={this.state.comments}
-                      fetchUser={this.fetchUser.bind(this)} />
+                      getFirestore={this.getFirestore.bind(this)} />
                   </footer>
                 </React.Fragment> : <Loading />
             }

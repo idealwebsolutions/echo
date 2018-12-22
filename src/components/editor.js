@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Hidden from '@material-ui/core/Hidden';
+import CloudUpload from '@material-ui/icons/CloudUpload';
 import { withStyles } from '@material-ui/core/styles';
 import { auth } from 'firebase/app';
 
@@ -12,7 +13,7 @@ import Loading from './loading';
 
 import { importStorage } from '../firebase';
 import { Attachments } from '../constants';
-import { makeToast, generatePostsUrl } from '../util';
+import { makeToast } from '../util';
 
 const Preview = React.lazy(() => import('react-markdown'));
 const CustomAvatar = React.lazy(() => import('./avatar'));
@@ -90,20 +91,26 @@ class TextEditor extends React.Component {
       return;
     }
 
-    const newPost = this.props.fb.database().ref(generatePostsUrl('demo')).push();
-    newPost.set({
-      uid: this.props.user.uid,
+    return this.props.getFirestore().collection('posts').doc()
+    .set({
+      topic: 'demo',
+      author: this.props.user.uid,
       content: this.state.post,
       reply: null
+    }).then(() => {
+      this.setState({
+        post: '',
+        preview: false
+      });
+      console.log('Comment submitted');
     })
-    .then(() => console.log('Comment submitted'))
     .catch((err) => makeToast(err.message, true));
   }
 
   componentWillMount () {
     importStorage().then(() => {
-      this.storage = this.props.fb.storage();
-    })
+      this.storage = this.props.getStorage();
+    }).catch((err) => console.error(err));
   }
 
   render () {
@@ -130,8 +137,9 @@ class TextEditor extends React.Component {
                     accepts={['image/*']}
                     onError={(err) => console.error(err)}
                     onChange={this.handleAssetInput.bind(this)}>
-                    <Button color="primary">
+                    <Button variant="contained" color="default">
                       Upload
+                      <CloudUpload />
                     </Button>
                   </Files>
                 </Grid>
@@ -149,11 +157,13 @@ class TextEditor extends React.Component {
           </Grid> : <Editor classes={this.props.classes} user={this.props.user} onChange={() => {}} /> 
         }
         <div className={this.props.classes.actionBar}>
-          <LoginScreen fb={this.props.fb} updateAuthState={this.props.updateAuthState} />
+          <LoginScreen getAuth={this.props.getAuth} updateAuthState={this.props.updateAuthState} />
         </div>
       </React.Fragment>
     );
   }
 }
+
+// ref=postId
 
 export default withStyles(styles)(TextEditor);
