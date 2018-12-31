@@ -5,14 +5,14 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   placeholder: {
-    'text-align': 'center',
+    textAlign: 'center',
     padding: '20px 10px'
   },
   icon: {
-    'font-size': '3rem'
+    fontSize: '3rem'
   },
   title: {
-    'margin-top': -1
+    marginTop: -1
   }
 };
 

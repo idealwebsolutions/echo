@@ -1,19 +1,16 @@
 import React from 'react';
-import { ToastContainer } from 'react-toastify';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Divider from '@material-ui/core/Divider';
 
 import Loading from './loading';
-import Toolbar from './toolbar';
+import Navigation from './navigation';
+import FilterBar from './filter';
 import TextEditor from './editor';
 import CommentList from './comment';
 import ResizableFrame from './frame';
 
 import { importApp, importFirestore } from '../firebase';
-import { 
-  makeToast, 
-} from '../util';
-
-import 'react-toastify/dist/ReactToastify.min.css';
+import { makeToast } from '../util';
 
 class App extends React.Component {
   constructor (props) {
@@ -77,22 +74,20 @@ class App extends React.Component {
           messagingSenderId: this.props.firebaseMessagingSenderId
         });
 
-        //this.getFirestore().enablePersistence()
-        //.catch((err) => makeToast(err.message, true))
+        /*this.getFirestore().enablePersistence()
+        .catch((err) => {
+          console.error(err);
+        });*/
 
         const demoRef = this.getFirestore().collection('topics').doc('demo');
         
-        const snapshotTotal = this.getFirestore().collection('posts')
-          .where('topic', '==', demoRef);
-        
-        snapshotTotal.onSnapshot((snapshot) => {
-          if (snapshot.empty) {
-            return;
-          }
+        demoRef.onSnapshot((snapshot) => {
+          const topic = snapshot.data();
 
-          this.setState({ totalComments: snapshot.size });
+          this.setState({ totalComments: topic.totalComments }); 
         }, (err) => console.error(err));
 
+        // COST - 10 READS
         const threadQuery = this.getFirestore().collection('posts')
           .where('topic', '==', demoRef)
           .where('reply', '==', null)
@@ -123,38 +118,36 @@ class App extends React.Component {
   
   render () {
     return (
-      <React.Fragment>
-        <ResizableFrame 
-          id="echo-content" 
-          style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
-            {
-              this.state.ready ?
-                <React.Fragment>
-                  <CssBaseline />
-                  <header>
-                    <Toolbar 
-                      totalComments={this.state.totalComments}
-                      getFirestore={this.getFirestore.bind(this)} />
-                  </header>
-                  <main>
-                    <TextEditor 
-                      user={this.state.user} 
-                      updateAuthState={this.updateAuthState.bind(this)}
-                      getStorage={this.getStorage.bind(this)}
-                      getAuth={this.getAuth.bind(this)}
-                      getFirestore={this.getFirestore.bind(this)} />
-                  </main>
-                  <footer>
-                    <CommentList 
-                      user={this.state.user}
-                      comments={this.state.comments}
-                      getFirestore={this.getFirestore.bind(this)} />
-                  </footer>
-                </React.Fragment> : <Loading />
-            }
-          </ResizableFrame>
-        <ToastContainer />
-      </React.Fragment>
+      <ResizableFrame 
+        id="echo-content" 
+        style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
+          {
+            this.state.ready ?
+              <React.Fragment>
+                <CssBaseline />
+                <Navigation 
+                  user={this.state.user}
+                  totalComments={this.state.totalComments}
+                  getFirestore={this.getFirestore.bind(this)} />
+                <main>
+                  <FilterBar />
+                  <Divider variant="middle" />
+                  <TextEditor 
+                    user={this.state.user} 
+                    updateAuthState={this.updateAuthState.bind(this)}
+                    getStorage={this.getStorage.bind(this)}
+                    getAuth={this.getAuth.bind(this)}
+                    getFirestore={this.getFirestore.bind(this)} />
+                </main>
+                <footer>
+                  <CommentList 
+                    user={this.state.user}
+                    comments={this.state.comments}
+                    getFirestore={this.getFirestore.bind(this)} />
+                </footer>
+              </React.Fragment> : <Loading />
+          }
+        </ResizableFrame>
     );
   }
 };

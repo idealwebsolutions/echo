@@ -8,6 +8,7 @@
     "build:dist": "export NODE_ENV=production && ./node_modules/webpack/bin/webpack.js --progress --config=webpack.dist.js --mode=production",
     "serve": "export NODE_ENV=development && ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --mode=development --content-base build",
     "lint": "eslint src/*.js",
+    "deploy-rules": "firebase deploy --only firestore:rules",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "idealwebsolutions",
@@ -32,11 +33,10 @@
     "react-dom": "^16.6.1",
     "react-files": "^2.4.7",
     "react-frame-component": "^4.0.2",
+    "react-hover-observer": "^2.1.1",
     "react-jss": "^8.6.1",
-    "react-loader-spinner": "^2.0.6",
     "react-markdown": "^4.0.3",
     "react-show-more-text": "^1.0.4",
-    "react-toastify": "^4.4.1",
     "spacetime": "^4.5.1"
   },
   "devDependencies": {

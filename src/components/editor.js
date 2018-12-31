@@ -27,8 +27,8 @@ const styles = {
     padding: '50px 25px !important'
   },
   actionBar: {
-    'min-height': 40,
-    'margin-top': 20
+    minHeight: 40,
+    marginTop: 20
   }
 };
 
@@ -38,10 +38,9 @@ const Editor = (props) => (
       fullWidth
       label="Add to the discussion"
       name="post"
-      rows={4}
+      rows={2}
       multiline
       margin="normal"
-      variant="outlined"
       value={props.post || ''}
       onChange={props.handleInputChange}
       disabled={!props.user}
@@ -156,9 +155,6 @@ class TextEditor extends React.Component {
             </Grid>
           </Grid> : <Editor classes={this.props.classes} user={this.props.user} onChange={() => {}} /> 
         }
-        <div className={this.props.classes.actionBar}>
-          <LoginScreen getAuth={this.props.getAuth} updateAuthState={this.props.updateAuthState} />
-        </div>
       </React.Fragment>
     );
   }

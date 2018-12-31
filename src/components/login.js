@@ -68,7 +68,7 @@ class LoginScreen extends React.Component {
   render () {
     if (this.state.signedIn) {
       return (
-        <Button variant="contained" color="secondary" className={this.props.classes.signOut} onClick={() => this.props.fb.auth().signOut()}>Sign out</Button>
+        <Button variant="contained" color="secondary" className={this.props.classes.signOut} onClick={() => this.props.getAuth().signOut()}>Sign out</Button>
       )
     }
 

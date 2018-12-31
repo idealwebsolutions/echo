@@ -21,15 +21,15 @@ const globalStyles = {
       'url("https://cdn.firebase.com/libs/firebaseui/3.4.1/firebaseui.css")'
     ],
     '*': {
-      'box-sizing': 'border-box'
+      boxSizing: 'border-box'
     },
     ul: {
-      'list-style-type': 'none',
+      listStyleType: 'none',
       padding: 0
     },
     body: {
-      'font-family': '"Roboto", sans-serif',
-      'background-color': 'transparent !important'
+      fontFamily: '"Roboto", sans-serif',
+      backgroundColor: 'transparent !important'
     }
   },
 };
