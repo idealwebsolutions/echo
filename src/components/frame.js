@@ -57,17 +57,19 @@ class ResizableFrame extends React.Component {
   }
   
   componentWillReceiveProps (nextProps) {
+    if (nextProps.src || !(nextProps.content || nextProps.children)) {
+      return;
+    }
+    
     this.resize();
   }
 
   componentWillUnmount () {
-    const iFrameResizer = this.frame.iFrameResizer;
-    
-    if (!iFrameResizer) {
+    if (!this.frame.iFrameResizer) {
       return;
     }
 
-    iFrameResizer.removeListeners();
+    this.frame.iFrameResizer.removeListeners();
   }
 
   handleRef (ref) {
