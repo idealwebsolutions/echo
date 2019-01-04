@@ -90,9 +90,11 @@ class ResizableFrame extends React.Component {
 
   injectContentWindow (element) {
     if (!element.target) {
-      console.error('Unable to find frame ref');
+      console.error('Unable to find frame reference');
       return;
     }
+
+    console.log('Injecting content window');
 
     const doc = element.target.contentDocument;
 

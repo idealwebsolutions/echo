@@ -1,9 +1,5 @@
-import { get } from 'axios';
 // No-op
 export const Noop = () => {};
-// Creates a custom toast
-export const makeToast = (message, error=false) => {
-}
 // Generates login configuration based on providers
 export const generateLoginConfig = (providers = []) => {
   if (!providers.length) {

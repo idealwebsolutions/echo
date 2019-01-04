@@ -13,8 +13,8 @@ exports.processNewPostCreated = functions.firestore.document('/posts/{postId}').
   // VALIDATE REPLIED USER ACTUALLY EXISTS
   // Cost: 1 READ
   if (post.reply) {
-    admin.firestore().collection('users').doc(post.reply).get()
-    .then((doc) => {
+    admin.firestore().collection('users').doc(post.reply)
+    .get().then((doc) => {
       if (!doc.exists) {
         return snapshot.ref.delete();
       }
@@ -28,12 +28,12 @@ exports.processNewPostCreated = functions.firestore.document('/posts/{postId}').
     // CHECK TOPIC SETTINGS
     const topic = doc.data();
     
-    if (!topic.closed) {
+    if (topic.closed) {
       return snapshot.ref.delete();
     }
 
     topicRef.set({
-      totalComments: doc.data().totalComments + 1
+      totalComments: topic.totalComments + 1
     }, { merge: true });
   }).catch((err) => console.error(err));
 
@@ -46,6 +46,34 @@ exports.processNewPostCreated = functions.firestore.document('/posts/{postId}').
     content: post.content,
     reply: post.reply
   });
+});
+
+exports.cascadePostDeletion = functions.firestore.document('/posts/{postId}').onDelete((snapshot, context) => {
+  const post = snapshot.data();
+  // Delete all votes associated
+  const voteQuery = admin.firestore().collection('votes').where('post', '==', context.params.postId);
+  voteQuery.get().then((querySnapshot) => {
+    if (querySnapshot.empty) {
+      return;
+    }
+
+    const batch = admin.firestore().batch();
+    querySnapshot.forEach((doc) => batch.delete(doc.ref));
+    return batch.commit();
+  }).catch((err) => console.error(err));
+  
+  // Update post counter
+  // UPDATE COUNTER
+  // 1 READ/1 WRITE
+  post.topic.get().then((doc) => {
+    const totalComments = doc.data().totalComments;
+
+    post.topic.set({
+      totalComments: ((totalComments - 1) < 0) ? 0 : totalComments - 1
+    }, { merge: true });
+  }).catch((err) => console.error(err));
+
+  return snapshot.ref.delete();
 });
 
 exports.deduplicateVotes = functions.firestore.document('/votes/{voteId}').onCreate((snapshot, context) => {

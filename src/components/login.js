@@ -1,19 +1,11 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
 import { auth } from 'firebase/app';
 
 import { importAuth } from '../firebase';
-import { FirebaseUIContainer } from '../constants';
+import { FrameElement, FirebaseUIContainer } from '../constants';
 import { generateLoginConfig, Noop } from '../util';
 
-const styles = {
-  signOut: {
-    width: '100%'
-  }
-};
-
-class LoginScreen extends React.Component {
+class LoginPanel extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -50,6 +42,7 @@ class LoginScreen extends React.Component {
       // this.props.fb.auth().disableAutoSignIn();
       this.renderWidget(generateLoginConfig([
         auth.GoogleAuthProvider.PROVIDER_ID,
+        auth.TwitterAuthProvider.PROVIDER_ID,
         auth.EmailAuthProvider.PROVIDER_ID
       ]));
     }).catch((err) => console.error(err));
@@ -60,21 +53,25 @@ class LoginScreen extends React.Component {
   }
   
   renderWidget (loginConfig) {
-    const targetFrame = document.querySelector('#echo-content');
+    const targetFrame = document.querySelector(`#${FrameElement}`);
     const container = targetFrame.contentDocument.body.querySelector(`#${FirebaseUIContainer}`);
+    
+    if (!container) {
+      return;
+    }
+
     this.uiWidget.start(container, loginConfig);
   }
-
+  
+  // this.props.getAuth().signout()
   render () {
     if (this.state.signedIn) {
-      return (
-        <Button variant="contained" color="secondary" className={this.props.classes.signOut} onClick={() => this.props.getAuth().signOut()}>Sign out</Button>
-      )
+      return null;
     }
 
     // TODO: requires firebase ui container to exist in both instances 
-    return <div id={FirebaseUIContainer}></div>
+    return (<div id={FirebaseUIContainer}></div>);
   }
 }
 
-export default withStyles(styles)(LoginScreen);
+export default LoginPanel;

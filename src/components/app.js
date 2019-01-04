@@ -3,20 +3,22 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 
 import Loading from './loading';
+import Toast from './toast';
 import Navigation from './navigation';
+import LoginPanel from './login';
 import FilterBar from './filter';
 import TextEditor from './editor';
 import CommentList from './comment';
 import ResizableFrame from './frame';
 
 import { importApp, importFirestore } from '../firebase';
-import { makeToast } from '../util';
 
 class App extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
       ready: false,
+      triggeredAlert: false,
       user: null,
       totalComments: 0,
       comments: []
@@ -25,8 +27,38 @@ class App extends React.Component {
   }
 
   updateAuthState (user) {
+    if (!user || Object.keys(user).length === 0) {
+      this.setState({
+        user: null
+      });
+      return;
+    }
+    
+    const accessRef = this.getFirestore().collection('access').doc(user.uid);
+    accessRef.get()
+    .then((doc) => {
+      this.setState({
+        user: !doc.exists ? Object.assign({}, user, {
+          roles: ['user']
+        }) : Object.assign({}, user, doc.data())
+      });
+      console.log(this.state.user)
+    })
+    .catch((err) => console.error(err));
+  }
+
+  notify (message, type='error') {
     this.setState({
-      user: !user || Object.keys(user).length === 0 ? false : user
+      triggeredAlert: {
+        type,
+        message
+      }
+    });
+  }
+
+  handleAlertClose () {
+    this.setState({
+      triggeredAlert: false
     });
   }
 
@@ -50,15 +82,18 @@ class App extends React.Component {
     this.setState({ ready: false });
     
     if (!this.props.firebaseApiKey.length) {
-      return makeToast('Configuration failed: Invalid Firebase API key', true);
+      this.notify('Configuration failed: Invalid Firebase API key');
+      return;
     }
 
     if (!this.props.firebaseProjectId.length) {
-      return makeToast('Configuration failed: Invalid Firebase Project Id', true);
+      this.notify('Configuration failed: Invalid Firebase Project Id');
+      return;
     }
 
     if (!this.props.firebaseMessagingSenderId.length) {
-      return makeToast('Configuration failed: Invalid Firebase Messaging Sender Id', true);
+      this.notify('Configuration failed: Invalid Firebase Messaging Sender Id');
+      return;
     }
 
     console.log(window.location.pathname);
@@ -78,7 +113,6 @@ class App extends React.Component {
         .catch((err) => {
           console.error(err);
         });*/
-
         const demoRef = this.getFirestore().collection('topics').doc('demo');
         
         demoRef.onSnapshot((snapshot) => {
@@ -87,26 +121,27 @@ class App extends React.Component {
           this.setState({ totalComments: topic.totalComments }); 
         }, (err) => console.error(err));
 
-        // COST - 10 READS
+        // COST - MAX 10 READS
         const threadQuery = this.getFirestore().collection('posts')
           .where('topic', '==', demoRef)
           .where('reply', '==', null)
-          .orderBy('created')
+          .orderBy('created', 'desc')
           .limit(10);
 
-        threadQuery.get().then((snapshot) => {
+        threadQuery.onSnapshot((snapshot) => {
           if (snapshot.empty) {
             return;
           }
+
+          console.log(snapshot.size);
           
           this.setState({
-            comments: this.state.comments.concat(snapshot.docs.map((doc) => Object.assign({}, doc.data(), {
+            comments: snapshot.docs.map((doc) => Object.assign({}, doc.data(), {
               id: doc.id
-            })))
+            }))
           });
-        })
-        .catch((err) => console.error(err));
-        /* 
+        }, (err) => console.error(err));
+        /* TODO: implement add comment to list 
         postsRef.on('child_changed', (snapshot) => {
           console.log(snapshot.val());
         });*/
@@ -117,10 +152,23 @@ class App extends React.Component {
   }
   
   render () {
+    if (!this.state.ready && this.state.triggeredAlert) {
+      return (
+        <React.Fragment>
+          <CssBaseline />
+          <Toast 
+            open={typeof this.state.triggeredAlert === 'object' || false}
+            variant={this.state.triggeredAlert.type || 'error'}
+            message={this.state.triggeredAlert.message || ''}
+            onClose={this.handleAlertClose.bind(this)} />
+        </React.Fragment>
+      );
+    }
+
     return (
       <ResizableFrame 
-        id="echo-content" 
-        style={{ minWidth: '100%', minHeight: '320px', overflow: 'hidden', border: 'none' }}>
+        id="echo_content" 
+        style={{ minWidth: '100%', minHeight: '1px', overflow: 'hidden', border: 'none' }}>
           {
             this.state.ready ?
               <React.Fragment>
@@ -128,16 +176,21 @@ class App extends React.Component {
                 <Navigation 
                   user={this.state.user}
                   totalComments={this.state.totalComments}
+                  getAuth={this.getAuth.bind(this)}
                   getFirestore={this.getFirestore.bind(this)} />
                 <main>
                   <FilterBar />
                   <Divider variant="middle" />
-                  <TextEditor 
-                    user={this.state.user} 
-                    updateAuthState={this.updateAuthState.bind(this)}
-                    getStorage={this.getStorage.bind(this)}
-                    getAuth={this.getAuth.bind(this)}
-                    getFirestore={this.getFirestore.bind(this)} />
+                  { this.state.user ? 
+                    <TextEditor 
+                      user={this.state.user} 
+                      getStorage={this.getStorage.bind(this)}
+                      getAuth={this.getAuth.bind(this)}
+                      getFirestore={this.getFirestore.bind(this)} />
+                    : <LoginPanel
+                        updateAuthState={this.updateAuthState.bind(this)}
+                        getAuth={this.getAuth.bind(this)} />
+                  }
                 </main>
                 <footer>
                   <CommentList 
@@ -145,6 +198,11 @@ class App extends React.Component {
                     comments={this.state.comments}
                     getFirestore={this.getFirestore.bind(this)} />
                 </footer>
+                <Toast 
+                  open={typeof this.state.triggeredAlert === 'object' || false} 
+                  variant={this.state.triggeredAlert.type || 'error'}
+                  message={this.state.triggeredAlert.message || ''}
+                  onClose={this.handleAlertClose.bind(this)} />
               </React.Fragment> : <Loading />
           }
         </ResizableFrame>

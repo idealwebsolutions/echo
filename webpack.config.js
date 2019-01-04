@@ -6,8 +6,6 @@ module.exports = {
   entry: {
     main: join(__dirname, 'src/index.js')/*,
     vendor: [
-      'inferno',
-      'axios'
       //'firebase/app',
       //'firebase/auth',
       //'firebase/database',
@@ -16,8 +14,8 @@ module.exports = {
   },
   output: {
     path: join(__dirname, 'build'),
-    filename: 'echo.build.js', // echo.[hash].bundle.js
-    chunkFilename: '[chunkhash].js',
+    filename: 'echo.build.js',
+    chunkFilename: '[id].[chunkhash].js',
     publicPath: '/assets/'
   },
   module: {
@@ -54,7 +52,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(['build'], {
-      exclude: ['index.html', 'config.json'],
+      exclude: ['index.html'],
       verbose: true,
       dry: false
     }),

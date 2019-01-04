@@ -7,16 +7,17 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import FormControl from '@material-ui/core/FormControl';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import KeyboardArrowUp from '@material-ui/icons/KeyboardArrowUp';
-import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
+import ThumbUp from '@material-ui/icons/ThumbUpAlt';
+import ThumbDown from '@material-ui/icons/ThumbDownAlt';
+import Edit from '@material-ui/icons/Edit';
+import Delete from '@material-ui/icons/Delete';
 import Flag from '@material-ui/icons/Flag';
+import Build from '@material-ui/icons/Build';
 import Grow from '@material-ui/core/Grow';
 import { withStyles } from '@material-ui/core/styles';
 import spacetime from 'spacetime';
@@ -44,7 +45,7 @@ const styles = {
     fontSize: '1.3rem',
   },
   commentContent: {
-    marginTop: -1
+    marginTop: 0
   },
   commentUpvoteDownvote: {
     marginTop: 12
@@ -53,8 +54,16 @@ const styles = {
     fontSize: '0.9rem'
   },
   expansionPanel: {
-    width: '100%',
-    boxShadow: 'none'
+    display: 'flex',
+    alignItems: 'flex-end',
+    paddingLeft: '40px'
+  },
+  actionButton: {
+    padding: 30
+  },
+  textButton: {
+    display: 'flex',
+    alignItems: 'center'
   }
 };
 
@@ -82,7 +91,9 @@ class Comment extends React.Component {
       upvotes: 0,
       downvotes: 0,
       report: null,
-      hidden: false
+      hidden: false,
+      processing: false,
+      currentUserVoted: null
     };
   }
 
@@ -133,10 +144,34 @@ class Comment extends React.Component {
     })).catch((err) => console.error(err));
   }
 
+  delete () {
+    if (!this.props.currentUser) {
+      return;
+    }
+
+    this.setState({
+      processing: true
+    });
+
+    const postRef = this.props.getFirestore().collection('posts').doc(this.props.id);
+    postRef.delete()
+    .then(() => {
+      console.log(`Removing post(${this.props.id})`);
+      this.setState({
+        processing: false
+      });
+    })
+    .catch((err) => console.error(err));
+  }
+
   toggleVote (like = true) {
     if (!this.props.currentUser) {
       return;
     }
+
+    this.setState({
+      processing: true
+    });
     
     const votes = this.props.getFirestore().collection('votes');
     
@@ -164,6 +199,12 @@ class Comment extends React.Component {
           });
           return batch.commit().then(() => {
             console.log('updated like to dislike')
+            this.setState({
+              currentUserVoted: {
+                positive: false
+              },
+              processing: false
+            });
           }).catch((err) => console.error(err));
         }
 
@@ -174,6 +215,10 @@ class Comment extends React.Component {
             snapshot.forEach((doc) => batch.delete(doc.ref));
             return batch.commit().then(() => {
               console.log('deleted dislike');
+              this.setState({
+                currentUserVoted: null,
+                processing: false
+              });
             }).catch((err) => console.error(err));
           }
           
@@ -184,6 +229,12 @@ class Comment extends React.Component {
           })
           .then(() => {
             console.log('added dislike');
+            this.setState({
+              currentUserVoted: {
+                positive: false,
+              },
+              processing: false
+            });
           })
         .catch((err) => console.error(err));
         }).catch((err) => console.error(err));
@@ -201,6 +252,12 @@ class Comment extends React.Component {
           });
           return batch.commit().then(() => {
             console.log('updated dislike to like');
+            this.setState({
+              currentUserVoted: {
+                positive: true,
+              },
+              processing: false
+            });
           }).catch((err) => console.error(err));
         }
 
@@ -211,6 +268,10 @@ class Comment extends React.Component {
             snapshot.forEach((doc) => batch.delete(doc.ref));
             return batch.commit().then(() => {
               console.log('delete like')
+              this.setState({
+                currentUserVoted: null,
+                processing: false
+              });
             }).catch((err) => console.error(err));
           }
           
@@ -221,6 +282,12 @@ class Comment extends React.Component {
           })
           .then(() => {
             console.log('Added like');
+            this.setState({
+              currentUserVoted: {
+                positive: true,
+              },
+              processing: false
+            });
           })
           .catch((err) => console.error(err));
         })
@@ -262,23 +329,14 @@ class Comment extends React.Component {
     }
     
     return (
-      <ListItem alignItems="flex-start" divider={!this.props.lastItem}>
-        <ExpansionPanel defaultExpanded onChange={this.toggleHide.bind(this)} className={this.props.classes.expansionPanel}>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            { this.state.hidden ? 
-              <Typography variant="subtitle1" color="textPrimary">
-                {this.state.author.name}
-              </Typography> : null 
-            }
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <ListItemAvatar>
-              <CustomAvatar user={this.state.author} />
-            </ListItemAvatar>
-            <ListItemText 
-              primary={
-                <React.Fragment>
-                  <Typography variant="subtitle1" className={this.props.classes.commentAuthor} color="textPrimary">
+      <ListItem key={(Date.now() * 9999)} alignItems="flex-start" divider={!this.props.lastItem}>
+        <ListItemAvatar>
+          <CustomAvatar user={this.state.author} />
+        </ListItemAvatar>
+        <ListItemText 
+          primary={
+            <React.Fragment>
+              <Typography variant="subtitle1" className={this.props.classes.commentAuthor} color="textPrimary">
                 <a onClick={this.toggleProfile.bind(this)} className={this.props.classes.commentLink}>{this.state.author.name}</a>
               </Typography>
               {spacetime(this.props.created).fromNow().rounded}
@@ -287,52 +345,80 @@ class Comment extends React.Component {
           secondary={
             <React.Fragment>
               <Grid container spacing={24}>
-                <Grid item sm={11}>
-                  <header>
-                    <ReactMarkdown
-                      className={this.props.classes.commentContent}
-                      source={this.props.content}
-                      disallowedItems={['link', 'linkReference']}
-                    />
-                  </header>
+                <Grid item sm={this.props.currentUser ? 7 : 12}>
+                  <ReactMarkdown
+                    className={this.props.classes.commentContent}
+                    source={this.props.content}
+                    disallowedItems={['link', 'linkReference']}
+                  />
                   <footer className={this.props.classes.footer}>
                     <Grid container spacing={8}>
                       <Grid item className={this.props.classes.commentUpvoteDownvote}>
                         <Typography component="span">{this.state.upvotes}</Typography>
                       </Grid>
                       <Grid item>
-                        <IconButton disabled={!this.props.currentUser} onClick={this.toggleVote.bind(this)} aria-label="upvote" className={this.props.classes.commentIcon}>
-                          <KeyboardArrowUp />
+                        <IconButton color={this.state.currentUserVoted && this.state.currentUserVoted.positive ? 'primary' : 'default'} disabled={this.state.processing || !this.props.currentUser} onClick={this.toggleVote.bind(this)} aria-label="upvote" className={this.props.classes.commentIcon}>
+                          <ThumbUp />
                         </IconButton>
                       </Grid>
                       <Grid item className={this.props.classes.commentUpvoteDownvote}>
                         <Typography component="span">{this.state.downvotes}</Typography>
                       </Grid>
                       <Grid item>
-                        <IconButton disabled={!this.props.currentUser} onClick={this.toggleVote.bind(this, false)} aria-label="downvote" className={this.props.classes.commentIcon}>
-                          <KeyboardArrowDown />
+                        <IconButton color={this.state.currentUserVoted && !this.state.currentUserVoted.positive ? 'secondary' : 'default'} disabled={this.state.processing || !this.props.currentUser} onClick={this.toggleVote.bind(this, false)} aria-label="downvote" className={this.props.classes.commentIcon}>
+                          <ThumbDown />
                         </IconButton>
                       </Grid>
-                      <Grid item>
-                        <IconButton disabled={!this.props.currentUser || (this.props.currentUser.uid === this.state.author.uid)} onClick={this.makeReport.bind(this)} className={this.props.classes.commentIcon}>
-                          <Flag />
-                        </IconButton>
+                      { 
+                        this.props.currentUser ? 
+                        <Grid item>
+                          <IconButton disabled={this.state.processing || !this.props.currentUser || (this.props.currentUser.uid === this.state.author.uid)} onClick={this.makeReport.bind(this)} className={this.props.classes.commentIcon}>
+                            <Flag />
+                          </IconButton>
+                        </Grid> : null
+                      }
+                      <Grid item className={this.props.classes.textButton}>
+                        <Button>REPLY</Button>
                       </Grid>
                     </Grid>
                   </footer>
                 </Grid>
-                <Grid item sm={1}>
-                  <Grid container spacing={8}>
-                    <Grid item>
-                    </Grid>
-                  </Grid>
-                </Grid>
+                {
+                  this.props.currentUser ? 
+                  <Grid item sm={5} justify="center" className={this.props.classes.expansionPanel}>
+                    <Grid container spacing={8}>
+                      {
+                        this.props.currentUser.roles.indexOf('administrator') > -1 || 
+                        this.state.author.uid === this.props.currentUser.uid ?
+                        <Grid item>
+                          <IconButton className={this.props.classes.commentIcon}>
+                            <Edit />
+                          </IconButton>
+                        </Grid> : null
+                      }
+                      { 
+                        this.state.author.uid === this.props.currentUser.uid ?
+                        <Grid item>
+                          <IconButton className={this.props.classes.commentIcon} onClick={this.delete.bind(this)}>
+                            <Delete />
+                          </IconButton>
+                        </Grid> : null
+                      }
+                      {
+                        this.props.currentUser.roles.indexOf('moderator') > -1 ?
+                        <Grid item>
+                          <IconButton className={this.props.classes.commentIcon}>
+                            <Build />
+                          </IconButton>
+                        </Grid> : null
+                      }
+                      </Grid>
+                  </Grid> : null
+                }
               </Grid>
             </React.Fragment>
           }>
-            </ListItemText>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+        </ListItemText>
       </ListItem>
     );
   }

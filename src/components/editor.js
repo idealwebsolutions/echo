@@ -13,7 +13,6 @@ import Loading from './loading';
 
 import { importStorage } from '../firebase';
 import { Attachments } from '../constants';
-import { makeToast } from '../util';
 
 const Preview = React.lazy(() => import('react-markdown'));
 const CustomAvatar = React.lazy(() => import('./avatar'));
@@ -23,12 +22,11 @@ const styles = {
     padding: 10,
     width: '100%'
   },
+  editorContainer: {
+    marginBottom: 20
+  },
   avatar: {
     padding: '50px 25px !important'
-  },
-  actionBar: {
-    minHeight: 40,
-    marginTop: 20
   }
 };
 
@@ -38,7 +36,7 @@ const Editor = (props) => (
       fullWidth
       label="Add to the discussion"
       name="post"
-      rows={2}
+      rows={1}
       multiline
       margin="normal"
       value={props.post || ''}
@@ -103,7 +101,7 @@ class TextEditor extends React.Component {
       });
       console.log('Comment submitted');
     })
-    .catch((err) => makeToast(err.message, true));
+    .catch((err) => console.error(err));
   }
 
   componentWillMount () {
@@ -116,7 +114,7 @@ class TextEditor extends React.Component {
     return (
       <React.Fragment>
         { this.props.user ? 
-          <Grid container spacing={24}>
+          <Grid container spacing={24} className={this.props.classes.editorContainer}>
             <Hidden xsDown>
               <Grid className={this.props.classes.avatar} item xs={2}>
                 <React.Suspense fallback={Loading}>
@@ -159,7 +157,5 @@ class TextEditor extends React.Component {
     );
   }
 }
-
-// ref=postId
 
 export default withStyles(styles)(TextEditor);

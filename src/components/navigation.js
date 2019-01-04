@@ -13,7 +13,8 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   appBar: {
-    boxShadow: 'none'
+    boxShadow: 'none',
+    backgroundColor: 'transparent'
   },
   toolbar: {
     display: 'flex',
@@ -21,39 +22,58 @@ const styles = {
   }
 };
 
-const Navigation = (props) =>
-  <AppBar position="static" className={props.classes.appBar} color="transparent">
-    <Toolbar component="nav" className={props.classes.toolbar}>
-      <Typography variant="subtitle1">
-        {props.totalComments} comments
-      </Typography>
-      <div>
-        { 
-          props.user ?
-            <IconButton color="inherit">
+class Navigation extends React.Component {
+  constructor () {
+    super();
+    this.state = {
+      loginActivated: false
+    };
+  }
+
+  toggleOptionScreen (activate = true) {
+    this.setState({
+      loginActivated: activate
+    });
+  }
+  
+  render () {
+    return (
+      <AppBar position="static" className={this.props.classes.appBar}>
+        <Toolbar component="nav" className={this.props.classes.toolbar}>
+          <Typography variant="subtitle1">
+            Comments ({this.props.totalComments})
+          </Typography>
+          <div>
+          { 
+            this.props.user ?
+            <IconButton color="primary">
               <Badge badgeContent={4} color="secondary">
                 <MailIcon />
               </Badge>
             </IconButton> 
-          : null
-        }
-        {
-          props.user ? 
-            <IconButton color="inherit">
+            : null
+          }
+          {
+            this.props.user ? 
+            <IconButton color="primary">
               <Badge badgeContent={17} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-          : null
-        }
-        { props.user ? 
-            <IconButton color="inherit">
+            : null
+          }
+          { 
+            this.props.user ? 
+            <IconButton color="primary">
               <AccountCircle />
             </IconButton>
-            : <Button variant="default">Sign In</Button>
-        }
-      </div>
-    </Toolbar>
-  </AppBar>
+            : null
+          }
+        </div>
+      </Toolbar>
+    </AppBar>
+    )
+  }
+}
 
 export default withStyles(styles)(Navigation);

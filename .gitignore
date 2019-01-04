@@ -1,5 +1,5 @@
+.firebaserc
 package-lock.json
 build/*.js
-build/*.json
 dist/
 node_modules/
