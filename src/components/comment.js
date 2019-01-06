@@ -1,5 +1,5 @@
 import React from 'react';
-// import ShowMoreText from 'react-show-more-text';
+import ShowMoreText from 'react-show-more-text';
 import ReactMarkdown from 'react-markdown';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
@@ -346,11 +346,13 @@ class Comment extends React.Component {
             <React.Fragment>
               <Grid container spacing={24}>
                 <Grid item sm={this.props.currentUser ? 7 : 12}>
-                  <ReactMarkdown
-                    className={this.props.classes.commentContent}
-                    source={this.props.content}
-                    disallowedItems={['link', 'linkReference']}
-                  />
+                  <ShowMoreText anchorClass="inline-block">
+                    <ReactMarkdown
+                      className={this.props.classes.commentContent}
+                      source={this.props.content}
+                      disallowedItems={['link', 'linkReference']}
+                    />
+                  </ShowMoreText>
                   <footer className={this.props.classes.footer}>
                     <Grid container spacing={8}>
                       <Grid item className={this.props.classes.commentUpvoteDownvote}>

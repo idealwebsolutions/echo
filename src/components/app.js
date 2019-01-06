@@ -141,10 +141,6 @@ class App extends React.Component {
             }))
           });
         }, (err) => console.error(err));
-        /* TODO: implement add comment to list 
-        postsRef.on('child_changed', (snapshot) => {
-          console.log(snapshot.val());
-        });*/
         // 
         this.setState({ ready: true });
       }).catch((err) => console.error(err));
