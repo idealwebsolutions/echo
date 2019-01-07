@@ -31,8 +31,8 @@ const globalStyles = {
       fontFamily: '"Roboto", sans-serif',
       backgroundColor: 'transparent !important'
     },
-    '.inline-block': {
-      display: 'inline-block'
+    '.block': {
+      display: 'flex'
     }
   },
 };

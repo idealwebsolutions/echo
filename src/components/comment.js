@@ -346,7 +346,7 @@ class Comment extends React.Component {
             <React.Fragment>
               <Grid container spacing={24}>
                 <Grid item sm={this.props.currentUser ? 7 : 12}>
-                  <ShowMoreText anchorClass="inline-block">
+                  <ShowMoreText anchorClass="block">
                     <ReactMarkdown
                       className={this.props.classes.commentContent}
                       source={this.props.content}
