@@ -3,16 +3,18 @@ import Files from 'react-files';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
+import Typography from '@material-ui/core/Typography';
+import Done from '@material-ui/icons/Done';
+import Send from '@material-ui/icons/Send';
 import CloudUpload from '@material-ui/icons/CloudUpload';
 import { withStyles } from '@material-ui/core/styles';
-import { auth } from 'firebase/app';
 
-import LoginScreen from './login';
 import Loading from './loading';
 
 import { importStorage } from '../firebase';
-import { Attachments } from '../constants';
+import { Attachments, MAX_POST_MESSAGE_LENGTH } from '../constants';
 
 const Preview = React.lazy(() => import('react-markdown'));
 const CustomAvatar = React.lazy(() => import('./avatar'));
@@ -88,7 +90,7 @@ class TextEditor extends React.Component {
       return;
     }
 
-    return this.props.getFirestore().collection('posts').doc()
+    this.props.getFirestore().collection('posts').doc()
     .set({
       topic: 'demo',
       author: this.props.user.uid,
@@ -128,20 +130,31 @@ class TextEditor extends React.Component {
                   <Preview disallowedTypes={['link', 'linkReference']} source={this.state.post} />
                 </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleInputChange={this.handleTextInput.bind(this)} />
               }
-              <Grid className={this.props.classes.editorToolbar} spacing={16} justify="space-between" container>
+              <Grid className={this.props.classes.editorToolbar} spacing={16} alignItems="center" justify="space-between" container>
                 <Grid item>
                   <Files 
                     accepts={['image/*']}
                     onError={(err) => console.error(err)}
                     onChange={this.handleAssetInput.bind(this)}>
-                    <Button variant="contained" color="default">
-                      Upload
+                    <IconButton variant="contained" color="default">
                       <CloudUpload />
-                    </Button>
+                    </IconButton>
                   </Files>
                 </Grid>
                 <Grid item>
-                  <Button color="primary" onClick={this.state.preview ? this.submitPost.bind(this) : this.togglePreview.bind(this, true)}>{this.state.preview ? 'Submit' : 'Preview'}</Button>
+                  <Grid spacing={8} alignItems="center" justify="flex-end" container>
+                    <Grid item>
+                      <Typography variant="overline">{this.state.post.length} / {MAX_POST_MESSAGE_LENGTH}</Typography>
+                    </Grid>
+                    <Grid item>
+                      <IconButton 
+                        color="primary" 
+                        disabled={this.state.post.length <= 0 || this.state.post.length > 256}
+                        onClick={this.state.preview ? this.submitPost.bind(this) : this.togglePreview.bind(this, true)}>
+                        {this.state.preview ? <Send /> : <Done />}
+                      </IconButton>
+                    </Grid>
+                  </Grid>
                 </Grid>
                 {
                   this.state.preview ? 

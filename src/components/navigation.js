@@ -29,12 +29,6 @@ class Navigation extends React.Component {
       loginActivated: false
     };
   }
-
-  toggleOptionScreen (activate = true) {
-    this.setState({
-      loginActivated: activate
-    });
-  }
   
   render () {
     return (
@@ -46,7 +40,7 @@ class Navigation extends React.Component {
           <div>
           { 
             this.props.user ?
-            <IconButton color="primary">
+            <IconButton color="default">
               <Badge badgeContent={4} color="secondary">
                 <MailIcon />
               </Badge>
@@ -55,7 +49,7 @@ class Navigation extends React.Component {
           }
           {
             this.props.user ? 
-            <IconButton color="primary">
+            <IconButton color="default">
               <Badge badgeContent={17} color="secondary">
                 <NotificationsIcon />
               </Badge>
@@ -64,7 +58,7 @@ class Navigation extends React.Component {
           }
           { 
             this.props.user ? 
-            <IconButton color="primary">
+            <IconButton color="default">
               <AccountCircle />
             </IconButton>
             : null
