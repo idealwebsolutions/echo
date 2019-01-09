@@ -13,6 +13,8 @@ import blue from '@material-ui/core/colors/blue';
 import Frame, { FrameContextConsumer } from 'react-frame-component';
 import { iframeResizer } from 'iframe-resizer';
 
+import { Noop } from '../util';
+
 const globalStyles = {
   '@global': {
     '@import': [
@@ -53,10 +55,9 @@ class ResizableFrame extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      ready: false,
-      jss: {},
-      container: null
+      ready: false
     };
+    this.frame = React.createRef();
   }
   
   componentWillReceiveProps (nextProps) {
@@ -67,31 +68,46 @@ class ResizableFrame extends React.Component {
     this.resize();
   }
 
+  componentDidMount () {
+    this.resize();
+  }
+
   componentWillUnmount () {
-    if (!this.frame.iFrameResizer) {
+    const iFrameResizer = this.frame.current.node.iFrameResizer;
+
+    if (!iFrameResizer) {
       return;
     }
 
-    this.frame.iFrameResizer.removeListeners();
-  }
-
-  handleRef (ref) {
-    this.frame = ref ? ref : null;
-    this.contentDocument = ref ? ref.node.contentDocument : null; 
+    iFrameResizer.removeListeners();
+    iFrameResizer.close();
   }
 
   resize () {
-    if (!this.frame) {
+    const node = this.frame.current.node;
+
+    if (!this.state.ready || !node) {
       return;
     }
 
-    iframeResizer({
-      log: true,
-      checkOrigin: false
-    }, this.frame.node); // node
+    const iFrameResizer = node.iFrameResizer;
+    
+    if (iFrameResizer) {
+      iFrameResizer.resize();
+    } else {
+      iframeResizer({
+        log: true,
+        checkOrigin: false
+      }, node);
+    }
   }
 
+  // TODO: This should only be done once
   injectContentWindow (element) {
+    if (this.state.ready) {
+      return;
+    }
+    
     if (!element.target) {
       console.error('Unable to find frame reference');
       return;
@@ -130,7 +146,7 @@ class ResizableFrame extends React.Component {
     return (
       <Frame 
         id={this.props.id}
-        ref={this.handleRef.bind(this)}
+        ref={this.frame}
         style={this.props.style}
         onLoad={this.injectContentWindow.bind(this)}
       >

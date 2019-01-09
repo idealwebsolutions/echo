@@ -42,7 +42,6 @@ class App extends React.Component {
           roles: ['user']
         }) : Object.assign({}, user, doc.data())
       });
-      console.log(this.state.user)
     })
     .catch((err) => console.error(err));
   }
@@ -113,6 +112,7 @@ class App extends React.Component {
         .catch((err) => {
           console.error(err);
         });*/
+        
         const demoRef = this.getFirestore().collection('topics').doc('demo');
         
         demoRef.onSnapshot((snapshot) => {
@@ -133,8 +133,6 @@ class App extends React.Component {
             return;
           }
 
-          console.log(snapshot.size);
-          
           this.setState({
             comments: snapshot.docs.map((doc) => Object.assign({}, doc.data(), {
               id: doc.id
