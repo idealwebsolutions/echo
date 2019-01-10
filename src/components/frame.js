@@ -13,8 +13,6 @@ import blue from '@material-ui/core/colors/blue';
 import Frame, { FrameContextConsumer } from 'react-frame-component';
 import { iframeResizer } from 'iframe-resizer';
 
-import { Noop } from '../util';
-
 const globalStyles = {
   '@global': {
     '@import': [
@@ -107,7 +105,7 @@ class ResizableFrame extends React.Component {
     if (this.state.ready) {
       return;
     }
-    
+
     if (!element.target) {
       console.error('Unable to find frame reference');
       return;

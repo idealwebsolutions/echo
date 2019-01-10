@@ -20,10 +20,11 @@ import Flag from '@material-ui/icons/Flag';
 import Build from '@material-ui/icons/Build';
 import Grow from '@material-ui/core/Grow';
 import { withStyles } from '@material-ui/core/styles';
-import spacetime from 'spacetime';
 
 import Placeholder from './placeholder';
 import CustomAvatar from './avatar';
+
+import { emojify, timeSince } from '../util';
 
 const styles = {
   root: {
@@ -339,7 +340,7 @@ class Comment extends React.Component {
               <Typography variant="subtitle1" className={this.props.classes.commentAuthor} color="textPrimary">
                 <a onClick={this.toggleProfile.bind(this)} className={this.props.classes.commentLink}>{this.state.author.name}</a>
               </Typography>
-              {spacetime(this.props.created).fromNow().rounded}
+              {timeSince(this.props.created)}
             </React.Fragment>
           }
           secondary={
@@ -349,7 +350,7 @@ class Comment extends React.Component {
                   <ShowMoreText anchorClass="block">
                     <ReactMarkdown
                       className={this.props.classes.commentContent}
-                      source={this.props.content}
+                      source={emojify(this.props.content)}
                       disallowedItems={['link', 'linkReference']}
                     />
                   </ShowMoreText>

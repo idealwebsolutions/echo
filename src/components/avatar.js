@@ -9,7 +9,7 @@ const styles = {
     height: 64,
     backgroundColor: randomMC.getColor()
   }
-}; // should generate random background color
+};
 
 const CustomAvatar = (props) => ( props.user.avatar ?
   <Avatar alt={props.user.name} src={props.user.avatar} className={props.classes.avatar} /> 

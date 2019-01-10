@@ -15,6 +15,7 @@ import Loading from './loading';
 
 import { importStorage } from '../firebase';
 import { Attachments, MAX_POST_MESSAGE_LENGTH } from '../constants';
+import { emojify } from '../util';
 
 const Preview = React.lazy(() => import('react-markdown'));
 const CustomAvatar = React.lazy(() => import('./avatar'));
@@ -127,7 +128,7 @@ class TextEditor extends React.Component {
             <Grid item xs={12} sm={10}>
               { this.state.preview ? 
                 <React.Suspense fallback={Loading}>
-                  <Preview disallowedTypes={['link', 'linkReference']} source={this.state.post} />
+                  <Preview disallowedTypes={['link', 'linkReference']} source={emojify(this.state.post)} />
                 </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleInputChange={this.handleTextInput.bind(this)} />
               }
               <Grid className={this.props.classes.editorToolbar} spacing={16} alignItems="center" justify="space-between" container>

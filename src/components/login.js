@@ -11,6 +11,7 @@ class LoginPanel extends React.Component {
     this.state = {
       signedIn: false
     };
+    this.login = React.createRef();
     this.uiWidget = null;
     this.unregisterAuthObserver = Noop;
   }
@@ -53,24 +54,21 @@ class LoginPanel extends React.Component {
   }
   
   renderWidget (loginConfig) {
-    const targetFrame = document.querySelector(`#${FrameElement}`);
-    const container = targetFrame.contentDocument.body.querySelector(`#${FirebaseUIContainer}`);
-    
-    if (!container) {
+    if (!this.login.current) {
       return;
     }
 
-    this.uiWidget.start(container, loginConfig);
+    this.uiWidget.start(this.login.current, loginConfig);
   }
   
-  // this.props.getAuth().signout()
+  // this.props.getAuth().signOut()
   render () {
     if (this.state.signedIn) {
       return null;
     }
 
     // TODO: requires firebase ui container to exist in both instances 
-    return (<div id={FirebaseUIContainer}></div>);
+    return (<div ref={this.login} id={FirebaseUIContainer}></div>);
   }
 }
 

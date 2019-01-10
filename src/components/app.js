@@ -61,6 +61,14 @@ class App extends React.Component {
     });
   }
 
+  sortBy (mode = 'new') {
+    if (mode === 'best') {
+      console.log('sort by best')
+    } else {
+      console.log('sort by new')
+    }
+  }
+
   getFirestore() {
     const firestore = this.fb.firestore();
     firestore.settings({
