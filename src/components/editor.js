@@ -5,8 +5,10 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
+import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import Done from '@material-ui/icons/Done';
+import Edit from '@material-ui/icons/Edit';
 import Send from '@material-ui/icons/Send';
 import CloudUpload from '@material-ui/icons/CloudUpload';
 import { withStyles } from '@material-ui/core/styles';
@@ -15,7 +17,7 @@ import Loading from './loading';
 
 import { importStorage } from '../firebase';
 import { Attachments, MAX_POST_MESSAGE_LENGTH } from '../constants';
-import { emojify } from '../util';
+import { noop, emojify } from '../util';
 
 const Preview = React.lazy(() => import('react-markdown'));
 const CustomAvatar = React.lazy(() => import('./avatar'));
@@ -128,24 +130,42 @@ class TextEditor extends React.Component {
             <Grid item xs={12} sm={10}>
               { this.state.preview ? 
                 <React.Suspense fallback={Loading}>
-                  <Preview disallowedTypes={['link', 'linkReference']} source={emojify(this.state.post)} />
+                  <Preview source={emojify(this.state.post)} disallowedTypes={['link', 'linkReference']}/>
                 </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleInputChange={this.handleTextInput.bind(this)} />
               }
+              {
+                this.state.preview ? <Divider variant="middle" /> : null
+              }
               <Grid className={this.props.classes.editorToolbar} spacing={16} alignItems="center" justify="space-between" container>
-                <Grid item>
-                  <Files 
-                    accepts={['image/*']}
-                    onError={(err) => console.error(err)}
-                    onChange={this.handleAssetInput.bind(this)}>
-                    <IconButton variant="contained" color="default">
-                      <CloudUpload />
+                { 
+                  this.state.preview ? null : 
+                  <Grid item>
+                    <Files 
+                      accepts={['image/*']}
+                      onError={(err) => console.error(err)}
+                      onChange={this.handleAssetInput.bind(this)}>
+                      <IconButton variant="contained" color="default">
+                        <CloudUpload />
+                      </IconButton>
+                    </Files>
+                  </Grid>
+                }
+                {
+                  this.state.preview ? 
+                  <Grid item>
+                    <IconButton color="default" onClick={this.togglePreview.bind(this, false)}>
+                      <Edit />
                     </IconButton>
-                  </Files>
-                </Grid>
+                  </Grid> : null
+                }
                 <Grid item>
                   <Grid spacing={8} alignItems="center" justify="flex-end" container>
                     <Grid item>
-                      <Typography variant="overline">{this.state.post.length} / {MAX_POST_MESSAGE_LENGTH}</Typography>
+                      <Typography
+                        color={this.state.post.length <= 0 || this.state.post.length > MAX_POST_MESSAGE_LENGTH ? 'error' : 'default'}
+                        variant="overline">
+                        {this.state.post.length} / {MAX_POST_MESSAGE_LENGTH}
+                      </Typography>
                     </Grid>
                     <Grid item>
                       <IconButton 
@@ -157,15 +177,9 @@ class TextEditor extends React.Component {
                     </Grid>
                   </Grid>
                 </Grid>
-                {
-                  this.state.preview ? 
-                  <Grid item>
-                    <Button color="primary" onClick={this.togglePreview.bind(this, false)}>Edit</Button>
-                  </Grid> : null
-                }
               </Grid>
             </Grid>
-          </Grid> : <Editor classes={this.props.classes} user={this.props.user} onChange={() => {}} /> 
+          </Grid> : <Editor classes={this.props.classes} user={this.props.user} onChange={Noop} /> 
         }
       </React.Fragment>
     );

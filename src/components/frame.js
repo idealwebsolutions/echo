@@ -4,14 +4,14 @@ import {
   MuiThemeProvider,
   withStyles,
   jssPreset,
-  createGenerateClassName,
-  createMuiTheme
+  createGenerateClassName
 } from '@material-ui/core/styles';
 import JssProvider from 'react-jss/lib/JssProvider';
 import global from 'jss-global';
-import blue from '@material-ui/core/colors/blue';
 import Frame, { FrameContextConsumer } from 'react-frame-component';
 import { iframeResizer } from 'iframe-resizer';
+
+import lightTheme from '../themes/light';
 
 const globalStyles = {
   '@global': {
@@ -39,7 +39,6 @@ const globalStyles = {
 
 const styles = (theme) => ({
   root: {
-    // backgroundColor: theme.palette.background.default,
     flexGrow: 1,
     height: 400,
     border: 'none',
@@ -132,15 +131,6 @@ class ResizableFrame extends React.Component {
   render () {
     const { children } = this.props;
     
-    const theme = createMuiTheme({
-      palette: {
-        primary: blue
-      },
-      typography: {
-        useNextVariants: true
-      }
-    });
-    
     return (
       <Frame 
         id={this.props.id}
@@ -156,12 +146,12 @@ class ResizableFrame extends React.Component {
             });
 
             jss.use(global());
-
+            
             document.head.innerHTML = '<style>' + jss.createStyleSheet(globalStyles) + '</style>';
 
             return (
               <JssProvider jss={jss} generateClassName={generateClassName}>
-                <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
+                <MuiThemeProvider theme={lightTheme} sheetsManager={new Map()}>
                   { children }
                 </MuiThemeProvider>
               </JssProvider>

@@ -3,7 +3,7 @@ import { auth } from 'firebase/app';
 
 import { importAuth } from '../firebase';
 import { FrameElement, FirebaseUIContainer } from '../constants';
-import { generateLoginConfig, Noop } from '../util';
+import { generateLoginConfig, noop } from '../util';
 
 class LoginPanel extends React.Component {
   constructor (props) {
@@ -13,7 +13,7 @@ class LoginPanel extends React.Component {
     };
     this.login = React.createRef();
     this.uiWidget = null;
-    this.unregisterAuthObserver = Noop;
+    this.unregisterAuthObserver = noop;
   }
 
   componentDidMount () {

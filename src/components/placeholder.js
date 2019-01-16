@@ -1,28 +1,17 @@
 import React from 'react';
-import Icon from '@material-ui/core/Icon';
-import Typography from '@material-ui/core/Typography';
+import ReactPlaceholder from 'react-placeholder';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
-  placeholder: {
-    textAlign: 'center',
-    padding: '20px 10px'
-  },
-  icon: {
-    fontSize: '3rem'
-  },
-  title: {
-    marginTop: -1
+  root: {
+    width: '100%'
   }
 };
 
 const Placeholder = (props) => (
-  <div className={props.classes.placeholder}>
-    <Icon className={props.classes.icon}>{props.icon}</Icon>
-    <Typography variant="h6" className={props.classes.title}>
-      {props.title}
-    </Typography>
-  </div>
+  <ReactPlaceholder className={props.classes.root} type="media" delay={5000} rows={props.rows} ready={props.ready}>
+    {props.children}
+  </ReactPlaceholder>
 );
 
 export default withStyles(styles)(Placeholder);

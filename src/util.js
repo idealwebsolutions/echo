@@ -5,7 +5,7 @@ import { wilsonScore } from 'decay';
 const bestScore = wilsonScore();
 
 // No-op
-export const Noop = () => {};
+export const noop = () => {};
 // Generates login configuration based on providers
 export const generateLoginConfig = (providers = []) => {
   if (!providers.length) {

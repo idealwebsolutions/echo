@@ -1,6 +1,6 @@
 import React from 'react';
-import ShowMoreText from 'react-show-more-text';
 import ReactMarkdown from 'react-markdown';
+import ShowMore from "@tedconf/react-show-more";
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -17,12 +17,15 @@ import ThumbDown from '@material-ui/icons/ThumbDownAlt';
 import Edit from '@material-ui/icons/Edit';
 import Delete from '@material-ui/icons/Delete';
 import Flag from '@material-ui/icons/Flag';
+import CommentIcon from '@material-ui/icons/Comment';
 import Build from '@material-ui/icons/Build';
+import Fade from '@material-ui/core/Fade';
 import Grow from '@material-ui/core/Grow';
 import { withStyles } from '@material-ui/core/styles';
+import approximate from 'approximate-number';
 
-import Placeholder from './placeholder';
 import CustomAvatar from './avatar';
+import Placeholder from './placeholder';
 
 import { emojify, timeSince } from '../util';
 
@@ -45,19 +48,11 @@ const styles = {
   commentIcon: {
     fontSize: '1.3rem',
   },
-  commentContent: {
-    marginTop: 0
-  },
   commentUpvoteDownvote: {
     marginTop: 12
   },
   footer: {
     fontSize: '0.9rem'
-  },
-  expansionPanel: {
-    display: 'flex',
-    alignItems: 'flex-end',
-    paddingLeft: '40px'
   },
   actionButton: {
     padding: 30
@@ -65,29 +60,28 @@ const styles = {
   textButton: {
     display: 'flex',
     alignItems: 'center'
+  },
+  placeholderContainer: {
+    textAlign: 'center',
+    padding: '20px 10px'
+  },
+  placeholderContent: {
+    padding: '10px 0 10px 0'
+  },
+  placeholderIcon: {
+    fontSize: '3rem'
+  },
+  placeholderTitle: {
+    marginTop: -1
   }
 };
-
-const CommandList = ({ isHovering = false }) => {
-  console.log(isHovering);
-  return <div></div>;
-}
-
-/*const CommandList = ({ isHovering = false }) => (
-  <div className="activated-command">
-    { isHovering ? 
-      <IconButton>
-        <KeyboardArrowUp />
-      </IconButton> : null
-    }
-  </div>
-);*/
 
 class Comment extends React.Component {
   constructor () {
     super();
     this.state = {
       ready: false,
+      processing: false,
       author: null,
       upvotes: 0,
       downvotes: 0,
@@ -100,7 +94,7 @@ class Comment extends React.Component {
 
   componentDidMount () {
     this.setState({ ready: false });
-    
+     
     const votes = this.props.getFirestore().collection('votes');
     
     const upvoteQuery = votes
@@ -325,12 +319,16 @@ class Comment extends React.Component {
   }
 
   render () {
-    if (!this.state.ready) {
-      return null;
+    if (!this.state.ready || (this.state.ready && this.state.processing)) {
+      return (
+        <ListItem alignItems="flex-start" divider={!this.props.lastItem}>
+          <Placeholder rows={3} ready={this.state.ready && !this.state.processing}>{null}</Placeholder>
+        </ListItem>
+      );
     }
     
     return (
-      <ListItem key={(Date.now() * 9999)} alignItems="flex-start" divider={!this.props.lastItem}>
+      <ListItem alignItems="flex-start" divider={!this.props.lastItem}>
         <ListItemAvatar>
           <CustomAvatar user={this.state.author} />
         </ListItemAvatar>
@@ -345,80 +343,83 @@ class Comment extends React.Component {
           }
           secondary={
             <React.Fragment>
-              <Grid container spacing={24}>
-                <Grid item sm={this.props.currentUser ? 7 : 12}>
-                  <ShowMoreText anchorClass="block">
-                    <ReactMarkdown
-                      className={this.props.classes.commentContent}
-                      source={emojify(this.props.content)}
-                      disallowedItems={['link', 'linkReference']}
-                    />
-                  </ShowMoreText>
-                  <footer className={this.props.classes.footer}>
+              <ReactMarkdown 
+                source={emojify(this.props.content)}
+                disallowedItems={['link', 'linkReference', 'html']}
+              />
+              <footer className={this.props.classes.footer}>
+                <Grid container justify="space-between">
+                  <Grid item>
                     <Grid container spacing={8}>
-                      <Grid item className={this.props.classes.commentUpvoteDownvote}>
-                        <Typography component="span">{this.state.upvotes}</Typography>
+                          { 
+                            this.state.upvotes > 0 ? 
+                            <Grid item className={this.props.classes.commentUpvoteDownvote}>
+                              <Typography component="span">{approximate(this.state.upvotes)}</Typography>
+                            </Grid> : null
+                          }
+                          <Grid item>
+                            <IconButton color={this.state.currentUserVoted && this.state.currentUserVoted.positive ? 'primary' : 'default'} disabled={this.state.processing || !this.props.currentUser} onClick={this.toggleVote.bind(this)} aria-label="upvote" className={this.props.classes.commentIcon}>
+                              <ThumbUp />
+                            </IconButton>
+                          </Grid>
+                          { 
+                            this.state.downvotes > 0 ? 
+                            <Grid item className={this.props.classes.commentUpvoteDownvote}>
+                              <Typography component="span">{approximate(this.state.downvotes)}</Typography>
+                            </Grid> : null
+                          }
+                          <Grid item>
+                            <IconButton color={this.state.currentUserVoted && !this.state.currentUserVoted.positive ? 'secondary' : 'default'} disabled={this.state.processing || !this.props.currentUser} onClick={this.toggleVote.bind(this, false)} aria-label="downvote" className={this.props.classes.commentIcon}>
+                              <ThumbDown />
+                            </IconButton>
+                          </Grid>
+                          { 
+                            this.props.currentUser ? 
+                            <Grid item>
+                              <IconButton disabled={this.state.processing || !this.props.currentUser || (this.props.currentUser.uid === this.state.author.uid)} onClick={this.makeReport.bind(this)} className={this.props.classes.commentIcon}>
+                                <Flag />
+                              </IconButton>
+                            </Grid> : null
+                          }
+                          <Grid item className={this.props.classes.textButton}>
+                            <Button>REPLY</Button>
+                          </Grid>
+                        </Grid>
                       </Grid>
-                      <Grid item>
-                        <IconButton color={this.state.currentUserVoted && this.state.currentUserVoted.positive ? 'primary' : 'default'} disabled={this.state.processing || !this.props.currentUser} onClick={this.toggleVote.bind(this)} aria-label="upvote" className={this.props.classes.commentIcon}>
-                          <ThumbUp />
-                        </IconButton>
-                      </Grid>
-                      <Grid item className={this.props.classes.commentUpvoteDownvote}>
-                        <Typography component="span">{this.state.downvotes}</Typography>
-                      </Grid>
-                      <Grid item>
-                        <IconButton color={this.state.currentUserVoted && !this.state.currentUserVoted.positive ? 'secondary' : 'default'} disabled={this.state.processing || !this.props.currentUser} onClick={this.toggleVote.bind(this, false)} aria-label="downvote" className={this.props.classes.commentIcon}>
-                          <ThumbDown />
-                        </IconButton>
-                      </Grid>
-                      { 
-                        this.props.currentUser ? 
+                      {
+                        this.props.currentUser ?
                         <Grid item>
-                          <IconButton disabled={this.state.processing || !this.props.currentUser || (this.props.currentUser.uid === this.state.author.uid)} onClick={this.makeReport.bind(this)} className={this.props.classes.commentIcon}>
-                            <Flag />
-                          </IconButton>
+                          <Grid container spacing={8}>
+                            {
+                              this.props.currentUser.roles.indexOf('') > -1 ||
+                              this.state.author.uid === this.props.currentUser.uid ?
+                                <Grid item>
+                                  <IconButton className={this.props.classes.commentIcon}>
+                                    <Edit />
+                                  </IconButton>
+                                </Grid> : null
+                            }    
+                            {
+                              this.state.author.uid === this.props.currentUser.uid ? 
+                                <Grid item>
+                                  <IconButton className={this.props.classes.commentIcon} onClick={this.delete.bind(this)}>
+                                    <Delete />
+                                  </IconButton>
+                                </Grid> : null
+                            }
+                            {
+                              this.props.currentUser.roles.indexOf('moderator') > -1 ?
+                                <Grid item>
+                                  <IconButton className={this.props.classes.commentIcon}>
+                                    <Build />
+                                  </IconButton>
+                                </Grid> : null
+                            }
+                          </Grid>
                         </Grid> : null
                       }
-                      <Grid item className={this.props.classes.textButton}>
-                        <Button>REPLY</Button>
-                      </Grid>
-                    </Grid>
-                  </footer>
                 </Grid>
-                {
-                  this.props.currentUser ? 
-                  <Grid item sm={5} justify="center" className={this.props.classes.expansionPanel}>
-                    <Grid container spacing={8}>
-                      {
-                        this.props.currentUser.roles.indexOf('administrator') > -1 || 
-                        this.state.author.uid === this.props.currentUser.uid ?
-                        <Grid item>
-                          <IconButton className={this.props.classes.commentIcon}>
-                            <Edit />
-                          </IconButton>
-                        </Grid> : null
-                      }
-                      { 
-                        this.state.author.uid === this.props.currentUser.uid ?
-                        <Grid item>
-                          <IconButton className={this.props.classes.commentIcon} onClick={this.delete.bind(this)}>
-                            <Delete />
-                          </IconButton>
-                        </Grid> : null
-                      }
-                      {
-                        this.props.currentUser.roles.indexOf('moderator') > -1 ?
-                        <Grid item>
-                          <IconButton className={this.props.classes.commentIcon}>
-                            <Build />
-                          </IconButton>
-                        </Grid> : null
-                      }
-                      </Grid>
-                  </Grid> : null
-                }
-              </Grid>
+              </footer>
             </React.Fragment>
           }>
         </ListItemText>
@@ -428,23 +429,49 @@ class Comment extends React.Component {
 };
 
 const CommentList = (props) => {
-  if (!props.comments.length) {
-    return <Placeholder title="No comments found" icon="comment" />;
+  // TODO: handle locked
+  if (!props.totalCommentsCount) {
+    return ( 
+      <div className={props.classes.placeholderContainer}>
+        <CommentIcon className={props.classes.placeholderIcon} />
+        <Typography variant="h6" className={props.classes.placeholderTitle}>
+          No Comments Found
+        </Typography>
+      </div>
+    );
   }
-  
-  const comments = props.comments.map((comment, index) => (
-    <Comment
-      id={comment.id}
-      authorRef={comment.author}
-      created={comment.created}
-      content={comment.content}
-      classes={props.classes}
-      currentUser={props.user}
-      getFirestore={props.getFirestore}
-      lastItem={index === props.comments.length - 1}
-    />
-  ));
-  return <List className={props.classes.root}>{comments}</List>;
+
+  return (
+    <List className={props.classes.root}>
+      <ShowMore 
+        items={props.comments}
+        by={10}
+        replace>
+          {({ current, onMore }) => (
+            <React.Fragment>
+              { 
+                current.map((comment, index) => 
+                  <Comment
+                    id={comment.id}
+                    authorRef={comment.author}
+                    created={comment.created}
+                    content={comment.content}
+                    classes={props.classes}
+                    currentUser={props.user}
+                    getFirestore={props.getFirestore}
+                    lastItem={index === props.comments.length - 1} />) 
+              }
+              { 
+                props.comments.length < props.totalCommentsCount ? 
+                  <ListItem alignItems="center" button>
+                    <ListItemText color="textPrimary" primary="Load more" />
+                  </ListItem> : null
+              }
+            </React.Fragment>
+          )}
+      </ShowMore>
+    </List>
+  );
 }
 
 export default withStyles(styles)(CommentList);

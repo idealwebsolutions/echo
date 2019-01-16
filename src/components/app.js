@@ -12,6 +12,7 @@ import CommentList from './comment';
 import ResizableFrame from './frame';
 
 import { importApp, importFirestore } from '../firebase';
+//import 'react-placeholder/lib/reactPlaceholder.css';
 
 class App extends React.Component {
   constructor (props) {
@@ -34,8 +35,8 @@ class App extends React.Component {
       return;
     }
     
-    const accessRef = this.getFirestore().collection('access').doc(user.uid);
-    accessRef.get()
+    this.getFirestore().collection('access').doc(user.uid)
+    .get()
     .then((doc) => {
       this.setState({
         user: !doc.exists ? Object.assign({}, user, {
@@ -67,6 +68,27 @@ class App extends React.Component {
     } else {
       console.log('sort by new')
     }
+  }
+
+  pullThreads (topic, offset = 0, limit = 10) {
+    const topicRef = this.getFirestore().collection('topics').doc(topic);
+    // COST - MAX 10 READS
+    this.getFirestore().collection('posts')
+    .where('topic', '==', topicRef)
+    .where('reply', '==', null)
+    .orderBy('created', 'desc')
+    .limit(limit)
+    .get().then((snapshot) => {
+      if (snapshot.empty) {
+        return;
+      }
+
+      this.setState({
+        comments: snapshot.docs.map((doc) => Object.assign({}, doc.data(), {
+          id: doc.id
+        }))
+      });
+    }).catch((err) => console.error(err));
   }
 
   getFirestore() {
@@ -126,29 +148,18 @@ class App extends React.Component {
         demoRef.onSnapshot((snapshot) => {
           const topic = snapshot.data();
 
-          this.setState({ totalComments: topic.totalComments }); 
-        }, (err) => console.error(err));
-
-        // COST - MAX 10 READS
-        const threadQuery = this.getFirestore().collection('posts')
-          .where('topic', '==', demoRef)
-          .where('reply', '==', null)
-          .orderBy('created', 'desc')
-          .limit(10);
-
-        threadQuery.onSnapshot((snapshot) => {
-          if (snapshot.empty) {
-            return;
+          const totalComments = topic.totalComments;
+          const locked = topic.closed;
+          
+          if (totalComments < 10) {
+            this.pullThreads('demo');
           }
 
           this.setState({
-            comments: snapshot.docs.map((doc) => Object.assign({}, doc.data(), {
-              id: doc.id
-            }))
+            totalComments,
+            ready: true
           });
         }, (err) => console.error(err));
-        // 
-        this.setState({ ready: true });
       }).catch((err) => console.error(err));
     }).catch((err) => console.error(err));
   }
@@ -172,7 +183,7 @@ class App extends React.Component {
         id="echo_content" 
         style={{ minWidth: '100%', minHeight: '1px', overflow: 'hidden', border: 'none' }}>
           {
-            this.state.ready ?
+            this.state.ready ? 
               <React.Fragment>
                 <CssBaseline />
                 <Navigation 
@@ -183,21 +194,23 @@ class App extends React.Component {
                 <main>
                   <FilterBar />
                   <Divider variant="middle" />
-                  { this.state.user ? 
-                    <TextEditor 
-                      user={this.state.user} 
-                      getStorage={this.getStorage.bind(this)}
-                      getAuth={this.getAuth.bind(this)}
-                      getFirestore={this.getFirestore.bind(this)} />
-                    : <LoginPanel
-                        updateAuthState={this.updateAuthState.bind(this)}
-                        getAuth={this.getAuth.bind(this)} />
+                  { 
+                    this.state.user ? 
+                      <TextEditor 
+                        user={this.state.user} 
+                        getStorage={this.getStorage.bind(this)}
+                        getAuth={this.getAuth.bind(this)}
+                        getFirestore={this.getFirestore.bind(this)} />
+                      : <LoginPanel
+                          updateAuthState={this.updateAuthState.bind(this)}
+                          getAuth={this.getAuth.bind(this)} />
                   }
                 </main>
                 <footer>
                   <CommentList 
                     user={this.state.user}
                     comments={this.state.comments}
+                    totalCommentsCount={this.state.totalComments}
                     getFirestore={this.getFirestore.bind(this)} />
                 </footer>
                 <Toast 
