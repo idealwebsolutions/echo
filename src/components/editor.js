@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
+import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 import Done from '@material-ui/icons/Done';
 import Edit from '@material-ui/icons/Edit';
@@ -20,7 +21,7 @@ import { Attachments, MAX_POST_MESSAGE_LENGTH } from '../constants';
 import { noop, emojify } from '../util';
 
 const Preview = React.lazy(() => import('react-markdown'));
-const CustomAvatar = React.lazy(() => import('./avatar'));
+const Avatar = React.lazy(() => import('./avatar'));
 
 const styles = {
   root: {
@@ -46,7 +47,7 @@ const Editor = (props) => (
       margin="normal"
       value={props.post || ''}
       onChange={props.handleInputChange}
-      disabled={!props.user}
+      disabled={!props.user || props.disabled}
     />
   </form>
 );
@@ -56,7 +57,9 @@ class TextEditor extends React.Component {
     super(props); 
     this.state = {
       preview: false,
-      post: ''
+      disabled: false,
+      post: '',
+      attachment: null
     };
     this.storage = null;
   }
@@ -75,13 +78,18 @@ class TextEditor extends React.Component {
       contentType: file.type
     });
     uploadTask.then((snapshot) => {
-      snapshot.ref.getDownloadURL().then((downloadURL) => {
-        this.setState({ 
-          post: this.state.post.concat(`\n![user attachment](${downloadURL})\n`)
-        })
-      });
+      snapshot.ref.getDownloadURL().then((downloadURL) => this.setState({ 
+        attachment: {
+          name: file.name,
+          url: downloadURL
+        }
+      }));
     });
-    uploadTask.catch((err) => makeToast(err.message, true));
+    uploadTask.catch((err) => console.error(err.message, true));
+  }
+
+  removeAsset () {
+  
   }
 
   togglePreview (preview) {
@@ -93,20 +101,19 @@ class TextEditor extends React.Component {
       return;
     }
 
-    this.props.getFirestore().collection('posts').doc()
-    .set({
-      topic: 'demo',
-      author: this.props.user.uid,
-      content: this.state.post,
-      reply: null
-    }).then(() => {
+    this.setState({
+      disabled: true
+    });
+
+    this.props.createPost(this.state.post, () => {
       this.setState({
         post: '',
+        attachment: null,
+        disabled: false,
         preview: false
       });
       console.log('Comment submitted');
     })
-    .catch((err) => console.error(err));
   }
 
   componentWillMount () {
@@ -123,33 +130,39 @@ class TextEditor extends React.Component {
             <Hidden xsDown>
               <Grid className={this.props.classes.avatar} item xs={2}>
                 <React.Suspense fallback={Loading}>
-                  <CustomAvatar user={this.props.user} />
+                  <Avatar alt={this.props.user.name} src={this.props.user.avatar} />
                 </React.Suspense>
               </Grid>
             </Hidden>
             <Grid item xs={12} sm={10}>
               { this.state.preview ? 
                 <React.Suspense fallback={Loading}>
-                  <Preview source={emojify(this.state.post)} disallowedTypes={['link', 'linkReference']}/>
-                </React.Suspense> : <Editor classes={this.props.classes} post={this.state.post} user={this.props.user} handleInputChange={this.handleTextInput.bind(this)} />
+                  <Preview 
+                    source={emojify(this.state.post)} 
+                    disallowedTypes={['link', 'linkReference', 'image', 'imageReference', 'html']}
+                  />
+                </React.Suspense> : <Editor disabled={this.state.disabled} classes={this.props.classes} post={this.state.post} user={this.props.user} handleInputChange={this.handleTextInput.bind(this)} />
               }
-              {
-                this.state.preview ? <Divider variant="middle" /> : null
-              }
+              { this.state.preview ? <Divider variant="middle" /> : null }
               <Grid className={this.props.classes.editorToolbar} spacing={16} alignItems="center" justify="space-between" container>
-                { 
-                  this.state.preview ? null : 
-                  <Grid item>
-                    <Files 
-                      accepts={['image/*']}
-                      onError={(err) => console.error(err)}
-                      onChange={this.handleAssetInput.bind(this)}>
-                      <IconButton variant="contained" color="default">
-                        <CloudUpload />
-                      </IconButton>
-                    </Files>
-                  </Grid>
+                <Grid item>
+                { this.state.attachment != null ?
+                  <Chip 
+                    avatar={
+                      <Avatar staticSizing={true} alt={this.state.attachment.name} src={this.state.attachment.url} />
+                    }
+                    label={this.state.attachment.name}
+                    onDelete={this.removeAsset.bind(this)} /> : 
+                  <Files 
+                    accepts={['image/*']}
+                    onError={(err) => console.error(err)}
+                    onChange={this.handleAssetInput.bind(this)}>
+                    <IconButton variant="contained" color="default">
+                      <CloudUpload />
+                    </IconButton>
+                  </Files>
                 }
+                </Grid>
                 {
                   this.state.preview ? 
                   <Grid item>
@@ -179,7 +192,7 @@ class TextEditor extends React.Component {
                 </Grid>
               </Grid>
             </Grid>
-          </Grid> : <Editor classes={this.props.classes} user={this.props.user} onChange={Noop} /> 
+          </Grid> : <Editor disabled={true} classes={this.props.classes} user={this.props.user} onChange={Noop} /> 
         }
       </React.Fragment>
     );

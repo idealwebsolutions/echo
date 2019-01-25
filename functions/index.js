@@ -44,7 +44,8 @@ exports.processNewPostCreated = functions.firestore.document('/posts/{postId}').
     topic: topicRef,
     author: userRef,
     content: post.content,
-    reply: post.reply
+    reply: post.reply,
+    attachment: post.attachment
   });
 });
 
@@ -69,12 +70,14 @@ exports.cascadePostDeletion = functions.firestore.document('/posts/{postId}').on
     const totalComments = doc.data().totalComments;
 
     post.topic.set({
-      totalComments: ((totalComments - 1) < 0) ? 0 : totalComments - 1
+      totalComments: totalComments - 1
     }, { merge: true });
   }).catch((err) => console.error(err));
 
   return snapshot.ref.delete();
 });
+
+// exports.moderatePost = functions.firestore.document('/moderator_logs/{logId}').
 
 exports.deduplicateVotes = functions.firestore.document('/votes/{voteId}').onCreate((snapshot, context) => {
   const vote = snapshot.data();

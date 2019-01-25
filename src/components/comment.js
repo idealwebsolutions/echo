@@ -24,7 +24,7 @@ import Grow from '@material-ui/core/Grow';
 import { withStyles } from '@material-ui/core/styles';
 import approximate from 'approximate-number';
 
-import CustomAvatar from './avatar';
+import Avatar from './avatar';
 import Placeholder from './placeholder';
 
 import { emojify, timeSince } from '../util';
@@ -148,15 +148,9 @@ class Comment extends React.Component {
       processing: true
     });
 
-    const postRef = this.props.getFirestore().collection('posts').doc(this.props.id);
-    postRef.delete()
-    .then(() => {
-      console.log(`Removing post(${this.props.id})`);
-      this.setState({
-        processing: false
-      });
-    })
-    .catch((err) => console.error(err));
+    this.props.removePost(this.props.id, () => this.setState({
+      processing: false  
+    }));
   }
 
   toggleVote (like = true) {
@@ -330,7 +324,7 @@ class Comment extends React.Component {
     return (
       <ListItem alignItems="flex-start" divider={!this.props.lastItem}>
         <ListItemAvatar>
-          <CustomAvatar user={this.state.author} />
+          <Avatar alt={this.state.author.name} src={this.state.author.avatar} />
         </ListItemAvatar>
         <ListItemText 
           primary={
@@ -345,7 +339,7 @@ class Comment extends React.Component {
             <React.Fragment>
               <ReactMarkdown 
                 source={emojify(this.props.content)}
-                disallowedItems={['link', 'linkReference', 'html']}
+                disallowedItems={['link', 'linkReference', 'image', 'imageReference', 'html']}
               />
               <footer className={this.props.classes.footer}>
                 <Grid container justify="space-between">
@@ -381,9 +375,12 @@ class Comment extends React.Component {
                               </IconButton>
                             </Grid> : null
                           }
-                          <Grid item className={this.props.classes.textButton}>
-                            <Button>REPLY</Button>
-                          </Grid>
+                          { 
+                            this.props.currentUser ? 
+                            <Grid item className={this.props.classes.textButton}>
+                              <Button>REPLY</Button>
+                            </Grid> : null
+                          }
                         </Grid>
                       </Grid>
                       {
@@ -458,6 +455,7 @@ const CommentList = (props) => {
                     content={comment.content}
                     classes={props.classes}
                     currentUser={props.user}
+                    removePost={props.removePost}
                     getFirestore={props.getFirestore}
                     lastItem={index === props.comments.length - 1} />) 
               }

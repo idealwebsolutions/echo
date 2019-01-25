@@ -21,6 +21,7 @@ class App extends React.Component {
       ready: false,
       triggeredAlert: false,
       user: null,
+      topic: '',
       totalComments: 0,
       comments: []
     };
@@ -89,6 +90,43 @@ class App extends React.Component {
         }))
       });
     }).catch((err) => console.error(err));
+  }
+
+  createPost (post, onFinish = () => {}) {
+    this.getFirestore().collection('posts').doc()
+    .set({
+      topic: 'demo',
+      author: this.state.user.uid,
+      content: post,
+      reply: null
+    }).then(() => {
+      onFinish();
+
+      this.setState({
+        comments: this.state.comments.unshift({
+        
+        })
+      });
+    })
+    .catch((err) => console.error(err)); 
+  }
+
+  removePost (id, onFinish = () => {}) {
+    const postRef = this.getFirestore().collection('posts').doc(id);
+    postRef.delete()
+    .then(() => {
+      console.log(`Removing post(${id})`);
+      
+      onFinish();
+      
+      this.setState({
+        comments: this.state.comments.filter((comment) => {
+          return id !== comment.id;
+        }),
+        totalComments: this.state.totalComments--
+      });
+    })
+    .catch((err) => console.error(err));
   }
 
   getFirestore() {
@@ -211,6 +249,7 @@ class App extends React.Component {
                     user={this.state.user}
                     comments={this.state.comments}
                     totalCommentsCount={this.state.totalComments}
+                    removePost={this.removePost.bind(this)}
                     getFirestore={this.getFirestore.bind(this)} />
                 </footer>
                 <Toast 
