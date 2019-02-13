@@ -2,11 +2,14 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import ShowMore from "@tedconf/react-show-more";
 import Grid from '@material-ui/core/Grid';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import FormControl from '@material-ui/core/FormControl';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
@@ -21,13 +24,18 @@ import CommentIcon from '@material-ui/icons/Comment';
 import Build from '@material-ui/icons/Build';
 import Fade from '@material-ui/core/Fade';
 import Grow from '@material-ui/core/Grow';
+import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 import approximate from 'approximate-number';
 
 import Avatar from './avatar';
 import Placeholder from './placeholder';
 
-import { emojify, timeSince } from '../util';
+import {
+  emojify, 
+  isBiggerViewport, 
+  timeSince 
+} from '../util';
 
 const styles = {
   root: {
@@ -87,14 +95,15 @@ class Comment extends React.Component {
       downvotes: 0,
       report: null,
       hidden: false,
-      processing: false,
+      replyMode: false,
+      optionsAnchor: null,
       currentUserVoted: null
     };
   }
 
   componentDidMount () {
     this.setState({ ready: false });
-     
+    
     const votes = this.props.getFirestore().collection('votes');
     
     const upvoteQuery = votes
@@ -302,6 +311,12 @@ class Comment extends React.Component {
     .catch((err) => console.error(err));
   }
 
+  beginReply () {
+    this.setState({
+      replyMode: true
+    });
+  }
+
   toggleProfile () {
   }
 
@@ -309,6 +324,18 @@ class Comment extends React.Component {
     console.log('toggle hide');
     this.setState({ 
       hidden: !this.state.hidden
+    });
+  }
+
+  openOptions (event) {
+    this.setState({
+      optionsAnchor: event.currentTarget
+    });
+  }
+
+  closeOptions () {
+    this.setState({
+      optionsAnchor: null
     });
   }
 
@@ -376,9 +403,9 @@ class Comment extends React.Component {
                             </Grid> : null
                           }
                           { 
-                            this.props.currentUser ? 
+                            this.props.currentUser && isBiggerViewport(this.props.width) ? 
                             <Grid item className={this.props.classes.textButton}>
-                              <Button>REPLY</Button>
+                              <Button onClick={this.beginReply.bind(this)}>REPLY</Button>
                             </Grid> : null
                           }
                         </Grid>
@@ -386,33 +413,64 @@ class Comment extends React.Component {
                       {
                         this.props.currentUser ?
                         <Grid item>
-                          <Grid container spacing={8}>
-                            {
-                              this.props.currentUser.roles.indexOf('') > -1 ||
-                              this.state.author.uid === this.props.currentUser.uid ?
-                                <Grid item>
-                                  <IconButton className={this.props.classes.commentIcon}>
-                                    <Edit />
+                          { 
+                            isBiggerViewport(this.props.width) ?
+                              (
+                                <Grid container spacing={8}>
+                                {
+                                  this.props.currentUser.roles.indexOf('moderator') > -1 ||
+                                  this.state.author.uid === this.props.currentUser.uid ?
+                                    <Grid item>
+                                      <IconButton className={this.props.classes.commentIcon}>
+                                        <Edit />
+                                      </IconButton>
+                                    </Grid> : null
+                                }
+                                {
+                                  this.state.author.uid === this.props.currentUser.uid ? 
+                                    <Grid item>
+                                      <IconButton className={this.props.classes.commentIcon} onClick={this.delete.bind(this)}>
+                                      <Delete />
+                                      </IconButton>
+                                    </Grid> : null
+                                }
+                                {
+                                  this.props.currentUser.roles.indexOf('moderator') > -1 ?
+                                    <Grid item>
+                                      <IconButton className={this.props.classes.commentIcon}>
+                                        <Build />
+                                      </IconButton>
+                                    </Grid> : null
+                                }
+                              </Grid>
+                              ) :
+                              (
+                                <div>
+                                  <IconButton className={this.props.classes.commentIcon} onClick={this.openOptions.bind(this)}>
+                                    <MoreVertIcon />
                                   </IconButton>
-                                </Grid> : null
-                            }    
-                            {
-                              this.state.author.uid === this.props.currentUser.uid ? 
-                                <Grid item>
-                                  <IconButton className={this.props.classes.commentIcon} onClick={this.delete.bind(this)}>
-                                    <Delete />
-                                  </IconButton>
-                                </Grid> : null
-                            }
-                            {
-                              this.props.currentUser.roles.indexOf('moderator') > -1 ?
-                                <Grid item>
-                                  <IconButton className={this.props.classes.commentIcon}>
-                                    <Build />
-                                  </IconButton>
-                                </Grid> : null
-                            }
-                          </Grid>
+                                  <Menu
+                                    id="options"
+                                    open={Boolean(this.state.optionsAnchor)}
+                                    anchorEl={this.state.optionsAnchor}
+                                    onClose={this.closeOptions.bind(this)}
+                                    PaperProps={{
+                                      style: {
+                                        maxHeight: 48 * 4.5,
+                                        width: 200,
+                                      }
+                                    }}>
+                                    <MenuItem>Reply</MenuItem>
+                                    <MenuItem>Edit</MenuItem>
+                                    <MenuItem>Delete</MenuItem>
+                                    { 
+                                      this.props.currentUser.roles.indexOf('moderator') > -1 ? 
+                                        <MenuItem>Moderate</MenuItem> : null
+                                    }
+                                  </Menu>
+                                </div>
+                              )
+                          }
                         </Grid> : null
                       }
                 </Grid>
@@ -457,7 +515,8 @@ const CommentList = (props) => {
                     currentUser={props.user}
                     removePost={props.removePost}
                     getFirestore={props.getFirestore}
-                    lastItem={index === props.comments.length - 1} />) 
+                    lastItem={index === props.comments.length - 1}
+                    width={props.width} />) 
               }
               { 
                 props.comments.length < props.totalCommentsCount ? 
@@ -472,4 +531,4 @@ const CommentList = (props) => {
   );
 }
 
-export default withStyles(styles)(CommentList);
+export default withStyles(styles)(withWidth()(CommentList));

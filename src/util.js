@@ -21,6 +21,10 @@ export const generateLoginConfig = (providers = []) => {
     }
   };
 };
+// Device viewport measurement to determine appropriate layout
+export const isBiggerViewport = (width) => {
+  return width === 'md' || width === 'lg' || width === 'xl';
+}
 // Converts text-specific keywords to unicode
 // Uses keyword format :keyword:
 export const emojify = (text = '') => {

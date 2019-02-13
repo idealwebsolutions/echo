@@ -73,7 +73,7 @@ class App extends React.Component {
 
   pullThreads (topic, offset = 0, limit = 10) {
     const topicRef = this.getFirestore().collection('topics').doc(topic);
-    // COST - MAX 10 READS
+    // COST - MAX 10 READS INITIALLY
     this.getFirestore().collection('posts')
     .where('topic', '==', topicRef)
     .where('reply', '==', null)
