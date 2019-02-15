@@ -460,9 +460,18 @@ class Comment extends React.Component {
                                         width: 200,
                                       }
                                     }}>
-                                    <MenuItem>Reply</MenuItem>
-                                    <MenuItem>Edit</MenuItem>
-                                    <MenuItem>Delete</MenuItem>
+                                    <MenuItem onClick={this.closeOptions.bind(this)}>
+                                      Reply
+                                    </MenuItem>
+                                    <MenuItem onClick={this.closeOptions.bind(this)}>
+                                      Edit
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { 
+                                      this.delete(); 
+                                      this.closeOptions();
+                                    }}>
+                                      Delete
+                                    </MenuItem>
                                     { 
                                       this.props.currentUser.roles.indexOf('moderator') > -1 ? 
                                         <MenuItem>Moderate</MenuItem> : null
@@ -484,7 +493,7 @@ class Comment extends React.Component {
 };
 
 const CommentList = (props) => {
-  // TODO: handle locked
+  // TODO: handle locked state
   if (!props.totalCommentsCount) {
     return ( 
       <div className={props.classes.placeholderContainer}>

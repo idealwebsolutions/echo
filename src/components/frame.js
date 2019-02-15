@@ -1,4 +1,5 @@
 import React from 'react';
+import NoSsr from '@material-ui/core/NoSsr';
 import { create } from 'jss';
 import {
   MuiThemeProvider,
@@ -23,11 +24,11 @@ const globalStyles = {
     '*': {
       boxSizing: 'border-box'
     },
-    ul: {
+    'ul': {
       listStyleType: 'none',
       padding: 0
     },
-    body: {
+    'body': {
       fontFamily: '"Roboto", sans-serif',
       backgroundColor: 'transparent !important'
     },
@@ -52,7 +53,7 @@ class ResizableFrame extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      ready: false
+      initialized: false
     };
     this.frame = React.createRef();
   }
@@ -81,14 +82,16 @@ class ResizableFrame extends React.Component {
   }
 
   resize () {
-    const node = this.frame.current.node;
-
-    if (!this.state.ready || !node) {
+    if (!this.frame.current) {
       return;
     }
 
-    const iFrameResizer = node.iFrameResizer;
+    const node = this.frame.current.node;
+    // Inject content window immediately 
+    this.injectContentWindow(node);
     
+    const iFrameResizer = node.iFrameResizer;
+
     if (iFrameResizer) {
       iFrameResizer.resize();
     } else {
@@ -99,66 +102,65 @@ class ResizableFrame extends React.Component {
     }
   }
 
-  // TODO: This should only be done once
   injectContentWindow (element) {
-    if (this.state.ready) {
+    if (this.state.initialized) {
       return;
     }
 
-    if (!element.target) {
-      console.error('Unable to find frame reference');
-      return;
-    }
-
-    console.log('Injecting content window');
-
-    const doc = element.target.contentDocument;
+    const doc = element.contentDocument;
 
     if (!doc) {
-      console.error('Unable to find contentDocument');
+      console.error('Unable to find contentDocument.');
       return;
     }
-    
+
+    console.log('Attempting to inject content window');
+
     const body = doc.getElementsByTagName('body')[0];
     const resizerScript = document.createElement('script');
+    
     resizerScript.type = 'text/javascript';
     resizerScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.8/iframeResizer.contentWindow.min.js';
-    body.appendChild(resizerScript);
+    resizerScript.defer = true;
+    resizerScript.onerror = (err) => console.error(err);
     
-    this.setState({ ready: true });
+    body.appendChild(resizerScript);
+    this.setState({
+      initialized: true
+    });
   }
-  
+
   render () {
     const { children } = this.props;
     
     return (
-      <Frame 
-        id={this.props.id}
-        ref={this.frame}
-        style={this.props.style}
-        onLoad={this.injectContentWindow.bind(this)}
-      >
-        <FrameContextConsumer>
-          { ({ document }) => {
-            const jss = create({
-              ...jssPreset(),
-              insertionPoint: document.body
-            });
+      <NoSsr>
+        <Frame 
+          id={this.props.id}
+          ref={this.frame}
+          style={this.props.style}>
+          <FrameContextConsumer>
+            { ({ document }) => {
+              const jss = create({
+                ...jssPreset(),
+                insertionPoint: document.body
+              });
 
-            jss.use(global());
+              jss.use(global());
             
-            document.head.innerHTML = '<style>' + jss.createStyleSheet(globalStyles) + '</style>';
-
-            return (
-              <JssProvider jss={jss} generateClassName={generateClassName}>
-                <MuiThemeProvider theme={lightTheme} sheetsManager={new Map()}>
-                  { children }
-                </MuiThemeProvider>
-              </JssProvider>
-            )
-          }}
-        </FrameContextConsumer>
-      </Frame>
+              document.head.innerHTML = '<style>' + jss.createStyleSheet(globalStyles) + '</style>';
+              
+              return (
+                <JssProvider jss={jss} generateClassName={generateClassName}>
+                  <MuiThemeProvider theme={lightTheme} sheetsManager={new Map()}>
+                    { children }
+                  </MuiThemeProvider>
+                </JssProvider>
+              )
+            }}
+          </FrameContextConsumer>
+        </Frame>
+      </NoSsr>
     )
   }
 }

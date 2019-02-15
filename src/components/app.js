@@ -236,6 +236,7 @@ class App extends React.Component {
                     this.state.user ? 
                       <TextEditor 
                         user={this.state.user} 
+                        createPost={this.createPost.bind(this)}
                         getStorage={this.getStorage.bind(this)}
                         getAuth={this.getAuth.bind(this)}
                         getFirestore={this.getFirestore.bind(this)} />
