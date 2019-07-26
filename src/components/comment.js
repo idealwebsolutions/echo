@@ -371,7 +371,7 @@ class Comment extends React.Component {
               <footer className={this.props.classes.footer}>
                 <Grid container justify="space-between">
                   <Grid item>
-                    <Grid container spacing={8}>
+                    <Grid container spacing={6}>
                           { 
                             this.state.upvotes > 0 ? 
                             <Grid item className={this.props.classes.commentUpvoteDownvote}>

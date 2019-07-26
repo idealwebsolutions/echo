@@ -4,10 +4,10 @@
   "description": "Experimental comment engine",
   "main": "index.js",
   "scripts": {
-    "build:dev": "export NODE_ENV=development && ./node_modules/webpack/bin/webpack.js --progress --mode=development",
-    "build:dist": "export NODE_ENV=production && ./node_modules/webpack/bin/webpack.js --progress --config=webpack.dist.js --mode=production",
-    "serve": "export NODE_ENV=development && ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --mode=development --content-base build",
-    "lint": "eslint src/*.js",
+    "build:dev": "export NODE_ENV=development && npx webpack-cli --progress --mode=development",
+    "build:dist": "export NODE_ENV=production && npx webpack-cli --progress --config=webpack.dist.js --mode=production",
+    "serve": "export NODE_ENV=development && npx webpack-dev-server --hot --mode=development --content-base build",
+    "lint": "npx eslint src/*.js",
     "deploy-rules": "firebase deploy --only firestore:rules",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -61,6 +61,7 @@
     "jest-enzyme": "^7.0.1",
     "license-webpack-plugin": "^2.0.2",
     "mini-css-extract-plugin": "^0.4.4",
+    "npx": "^10.2.0",
     "react-test-renderer": "^16.7.0",
     "style-loader": "^0.23.1",
     "terser-webpack-plugin": "^1.1.0",
