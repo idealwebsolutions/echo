@@ -40,12 +40,12 @@ exports.processNewPostCreated = functions.firestore.document('/posts/{postId}').
   // Don't extend object, we don't want to include any data we don't need/care about
   // Cost: 1 WRITE
   return snapshot.ref.update({
-    created: Date.now(),
+    created: admin.firestore.Timestamp.now().toMillis(), //admin.firestore.FieldValue.serverTimestamp(),
     topic: topicRef,
     author: userRef,
     content: post.content,
     reply: post.reply,
-    attachment: post.attachment
+    attachment: post.attachment || null
   });
 });
 
