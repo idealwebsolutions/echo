@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionId": "posts",
+      "state": "READY",
+      "fields": [
+        {
+          "fieldPath": "reply",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "topic",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "created",
+          "mode": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}
